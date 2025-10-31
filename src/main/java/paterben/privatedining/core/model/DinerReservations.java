@@ -6,14 +6,12 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-// List of reservations for a table.
-@Document(collection = "tableReservations")
-public class TableReservations {
+// List of reservations for a diner.
+@Document(collection = "dinerReservations")
+public class DinerReservations {
     @Id
-    // Table ID. Globally unique.
+    // The ID of the diner.
     private String id;
-    // The ID of the restaurant the table belongs to.
-    private String restaurantId;
     // The list of reservations.
     private List<Reservation> reservations;
 
@@ -25,14 +23,6 @@ public class TableReservations {
         this.id = id;
     }
 
-    public String getRestaurantId() {
-        return restaurantId;
-    }
-
-    public void setRestaurantId(String restaurantId) {
-        this.restaurantId = restaurantId;
-    }
-
     public List<Reservation> getReservations() {
         return reservations;
     }
@@ -41,7 +31,7 @@ public class TableReservations {
         this.reservations = reservations;
     }
 
-    public TableReservations() {
+    public DinerReservations() {
         this.reservations = new ArrayList<>();
     }
 
@@ -62,7 +52,7 @@ public class TableReservations {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        TableReservations other = (TableReservations) obj;
+        DinerReservations other = (DinerReservations) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

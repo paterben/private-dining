@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import paterben.privatedining.core.model.RestaurantTables;
 import paterben.privatedining.core.model.Table;
@@ -17,6 +18,7 @@ import paterben.privatedining.repository.TableReservationsRepository;
 
 @Service
 public class TableServiceImpl implements TableService {
+    
     @Autowired
     private RestaurantTablesRepository restaurantTablesRepository;
 
@@ -26,14 +28,16 @@ public class TableServiceImpl implements TableService {
     @Override
     @Transactional
     public Table addTableToRestaurant(String restaurantId, Table table) {
+        ValidateTableForCreation(table);
+
         Optional<RestaurantTables> restaurantTables = restaurantTablesRepository.findById(restaurantId);
         if (restaurantTables.isEmpty()) {
-            throw new RestaurantServiceException("Restaurant with ID " + restaurantId + " not found",
+            throw new ServiceException("Restaurant with ID " + restaurantId + " not found",
                     HttpStatus.NOT_FOUND);
         }
         if (restaurantTables.get().getTables().stream()
                 .anyMatch(t -> t.getName() != null && t.getName().equals(table.getName()))) {
-            throw new RestaurantServiceException("Table with name \"" + table.getName() + "\" already exists",
+            throw new ServiceException("Table with name \"" + table.getName() + "\" already exists",
                     HttpStatus.CONFLICT);
         }
         // We generate the table ID ourselves since it is an embedded document in
@@ -49,6 +53,7 @@ public class TableServiceImpl implements TableService {
         // reservation.
         TableReservations tableReservations = new TableReservations();
         tableReservations.setId(tableId);
+        tableReservations.setRestaurantId(restaurantId);
         tableReservationsRepository.save(tableReservations);
 
         return newTable;
@@ -71,5 +76,12 @@ public class TableServiceImpl implements TableService {
             return Optional.empty();
         }
         return Optional.of(restaurantTables.get().getTables());
+    }
+
+    private void ValidateTableForCreation(Table table) throws ServiceException {
+        if (StringUtils.hasLength(table.getId())) {
+            throw new ServiceException("Table `id` must not be set when creating a table.",
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 }

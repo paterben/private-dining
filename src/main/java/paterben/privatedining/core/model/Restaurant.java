@@ -4,18 +4,29 @@ import java.time.Instant;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+// Restaurant metadata.
 @Document(collection = "restaurants")
 public class Restaurant {
 
+    // Restaurant ID. Globally unique.
     @Id
     private String id;
+    // Restaurant name. Required but not globally unique.
     private String name;
+    // Restaurant address. Optional.
     private String address;
+    // Restaurant email. Globally unique, enforced by a unique index. Requires
+    // MongoDB auto-index creation to be enabled.
+    @Indexed(unique = true)
+    private String email;
+    // Restaurant currency (ISO 4217 currency code). Required.
     private String currency;
+    // Restaurant creation time.
     @CreatedDate
-    private Instant created;
+    private Instant createdAt;
 
     public String getId() {
         return id;
@@ -41,6 +52,14 @@ public class Restaurant {
         this.address = address;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getCurrency() {
         return currency;
     }
@@ -49,28 +68,29 @@ public class Restaurant {
         this.currency = currency;
     }
 
-    public Instant getCreated() {
-        return created;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated(Instant created) {
-        this.created = created;
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Restaurant() {
     }
 
-    public Restaurant(String name, String address, String currency) {
+    public Restaurant(String name, String address, String email, String currency) {
         this.name = name;
         this.address = address;
+        this.email = email;
         this.currency = currency;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Restaurant[id=%s, name='%s', address='%s', currency='%s',created='%s']",
-                id, name, address, currency, created);
+                "Restaurant[id='%s', name='%s', address='%s', email='%s', currency='%s', createdAt='%s']",
+                id, name, address, email, currency, createdAt);
     }
 
     @Override
@@ -80,8 +100,9 @@ public class Restaurant {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((address == null) ? 0 : address.hashCode());
+        result = prime * result + ((email == null) ? 0 : email.hashCode());
         result = prime * result + ((currency == null) ? 0 : currency.hashCode());
-        result = prime * result + ((created == null) ? 0 : created.hashCode());
+        result = prime * result + ((createdAt == null) ? 0 : createdAt.hashCode());
         return result;
     }
 
@@ -109,15 +130,20 @@ public class Restaurant {
                 return false;
         } else if (!address.equals(other.address))
             return false;
+        if (email == null) {
+            if (other.email != null)
+                return false;
+        } else if (!email.equals(other.email))
+            return false;
         if (currency == null) {
             if (other.currency != null)
                 return false;
         } else if (!currency.equals(other.currency))
             return false;
-        if (created == null) {
-            if (other.created != null)
+        if (createdAt == null) {
+            if (other.createdAt != null)
                 return false;
-        } else if (!created.equals(other.created))
+        } else if (!createdAt.equals(other.createdAt))
             return false;
         return true;
     }

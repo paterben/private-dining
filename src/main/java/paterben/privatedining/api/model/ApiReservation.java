@@ -1,35 +1,35 @@
-package paterben.privatedining.core.model;
+package paterben.privatedining.api.model;
 
 import java.time.Instant;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 
-// Reservation metadata.
-// No Document annotation since all reservations live within the tableReservations or dinerReservations documents.
-public class Reservation {
-    // Reservation ID. Globally unique.
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Reservation metadata.")
+public class ApiReservation {
     @Id
+    @Schema(description = "Reservation ID. Set automatically.")
     private String id;
-    // ID of the restaurant the reservation is for.
+    @Schema(description = "ID of the restaurant the reservation is for. Set automatically.")
     private String restaurantId;
-    // ID of the table the reservation is for.
+    @Schema(description = "ID of the table the reservation is for. Set automatically.")
     private String tableId;
-    // ID of the diner that made the reservation.
+    @Schema(description = "ID of the diner the reservation is for. Required.")
     private String dinerId;
-    // Name under which the reservation is made.
+    @Schema(description = "Name under which the reservation is made. Required.")
     private String name;
-    // Start time of the reservation.
+    @Schema(description = "Start time of the reservation. Required.")
     private Instant reservationStart;
-    // End time of the reservation.
+    @Schema(description = "End time of the reservation. Required.")
     private Instant reservationEnd;
-    // True if the reservation has been cancelled, either by the restaurant or the
-    // diner.
+    @Schema(description = "True if the reservation has been cancelled, either by the restaurant or the diner.")
     private boolean isCancelled;
-    // Creation time of the reservation.
     @CreatedDate
+    @Schema(description = "Reservation creation time. Set automatically.")
     private Instant createdAt;
-    // Cancellation time of the reservation, or null if not cancelled.
+    @Schema(description = "Cancellation time of the reservation, or null if not cancelled. Set automatically.")
     private Instant cancelledAt;
 
     public String getId() {
@@ -112,10 +112,10 @@ public class Reservation {
         this.cancelledAt = cancelledAt;
     }
 
-    public Reservation() {
+    public ApiReservation() {
     }
 
-    public Reservation(String dinerId, String name, Instant reservationStart, Instant reservationEnd) {
+    public ApiReservation(String dinerId, String name, Instant reservationStart, Instant reservationEnd) {
         this.dinerId = dinerId;
         this.name = name;
         this.reservationStart = reservationStart;
@@ -125,7 +125,7 @@ public class Reservation {
     @Override
     public String toString() {
         return String.format(
-                "Reservation[id='%s', restaurantId='%s', tableId='%s', dinerId='%s', name='%s', reservationStart='%s', reservationEnd='%s', isCancelled='%s', createdAt='%s', cancelledAt='%s']",
+                "ApiReservation[id='%s', restaurantId='%s', tableId='%s', dinerId='%s', name='%s', reservationStart='%s', reservationEnd='%s', isCancelled='%s', createdAt='%s', cancelledAt='%s']",
                 id, restaurantId, tableId, dinerId, name, reservationStart, reservationEnd, isCancelled, createdAt,
                 cancelledAt);
     }
@@ -155,7 +155,7 @@ public class Reservation {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Reservation other = (Reservation) obj;
+        ApiReservation other = (ApiReservation) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

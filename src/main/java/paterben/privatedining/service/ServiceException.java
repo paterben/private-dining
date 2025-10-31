@@ -1,15 +1,15 @@
-package paterben.privatedining.api;
+package paterben.privatedining.service;
 
 import org.springframework.http.HttpStatusCode;
 
-public class ApiException extends RuntimeException {
+public class ServiceException extends RuntimeException {
     private HttpStatusCode httpStatusCode;
 
     public HttpStatusCode getHttpStatusCode() {
         return httpStatusCode;
     }
 
-    public ApiException(String message, HttpStatusCode httpStatusCode) {
+    public ServiceException(String message, HttpStatusCode httpStatusCode) {
         super(message);
         this.httpStatusCode = httpStatusCode;
     }

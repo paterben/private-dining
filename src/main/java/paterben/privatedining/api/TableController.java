@@ -13,17 +13,15 @@ import paterben.privatedining.api.conversion.ApiConverter;
 import paterben.privatedining.api.model.ApiErrorInfo;
 import paterben.privatedining.api.model.ApiTable;
 import paterben.privatedining.core.model.Table;
-import paterben.privatedining.service.RestaurantServiceException;
+import paterben.privatedining.service.ServiceException;
 import paterben.privatedining.service.TableService;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -79,36 +77,17 @@ public class TableController {
     })
     public ApiTable createTableForRestaurant(@PathVariable("restaurantId") String restaurantId,
             @RequestBody ApiTable apiTable) {
-        ValidateTableForCreation(apiTable);
-
         Table table = converter.ToCore(apiTable);
         Table newTable = tableService.addTableToRestaurant(restaurantId, table);
         return converter.ToApi(newTable);
     }
-
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiErrorInfo> handleError(HttpServletRequest req, ApiException ex) {
+    
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<ApiErrorInfo> handleError(HttpServletRequest req, ServiceException ex) {
         // logger.error("Request: " + req.getRequestURL() + " raised " + ex);
 
         ApiErrorInfo info = new ApiErrorInfo();
         info.setErrorMessage(ex.getLocalizedMessage());
         return new ResponseEntity<ApiErrorInfo>(info, ex.getHttpStatusCode());
-    }
-
-    @ExceptionHandler(RestaurantServiceException.class)
-    public ResponseEntity<ApiErrorInfo> handleError(HttpServletRequest req, RestaurantServiceException ex) {
-        // logger.error("Request: " + req.getRequestURL() + " raised " + ex);
-
-        ApiErrorInfo info = new ApiErrorInfo();
-        info.setErrorMessage(ex.getLocalizedMessage());
-        return new ResponseEntity<ApiErrorInfo>(info, ex.getHttpStatusCode());
-    }
-
-    // TODO move to core logic.
-    private void ValidateTableForCreation(ApiTable apiTable) throws ApiException {
-        if (StringUtils.hasLength(apiTable.getId())) {
-            throw new ApiException("Table `id` must not be set when creating a table.",
-                    HttpStatus.BAD_REQUEST);
-        }
     }
 }

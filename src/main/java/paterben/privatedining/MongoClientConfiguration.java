@@ -24,6 +24,9 @@ public class MongoClientConfiguration extends AbstractMongoClientConfiguration {
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
+    @Value("${spring.data.mongodb.auto-index-creation}")
+    private boolean autoIndexCreation;
+
     @Bean
     MongoTransactionManager transactionManager(MongoDatabaseFactory mongoDatabaseFactory) {
         return new MongoTransactionManager(mongoDatabaseFactory);
@@ -32,6 +35,11 @@ public class MongoClientConfiguration extends AbstractMongoClientConfiguration {
     @Override
     protected String getDatabaseName() {
         return databaseName;
+    }
+
+    @Override
+    public boolean autoIndexCreation() {
+        return autoIndexCreation;
     }
 
     @Override
