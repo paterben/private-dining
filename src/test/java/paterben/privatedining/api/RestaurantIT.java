@@ -26,7 +26,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import paterben.privatedining.api.model.ApiRestaurant;
 import paterben.privatedining.core.model.Restaurant;
+import paterben.privatedining.core.model.RestaurantTables;
 import paterben.privatedining.repository.RestaurantRepository;
+import paterben.privatedining.repository.RestaurantTablesRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,6 +39,9 @@ import paterben.privatedining.repository.RestaurantRepository;
 public class RestaurantIT {
     @Autowired
     private RestaurantRepository restaurantRepository;
+
+    @Autowired
+    private RestaurantTablesRepository restaurantTablesRepository;
 
     @Autowired
     private MockMvcTester mockMvcTester;
@@ -75,6 +80,12 @@ public class RestaurantIT {
         assertEquals(created.truncatedTo(ChronoUnit.MILLIS),
                 foundRestaurant.get().getCreated().truncatedTo(ChronoUnit.MILLIS));
         assertEquals(newRestaurant.getName(), foundRestaurant.get().getName());
+
+        // Check that empty restaurantTables was created in DB.
+        Optional<RestaurantTables> foundRestaurantTables = restaurantTablesRepository.findById(restaurantId);
+        assertThat(foundRestaurantTables).isPresent();
+        assertEquals(restaurantId, foundRestaurantTables.get().getId());
+        assertThat(foundRestaurantTables.get().getTables()).isEmpty();
     }
 
     @Test

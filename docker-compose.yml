@@ -1,9 +1,29 @@
 services:
   mongodb:
     image: mongo:8.2.1
+    command: ["--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27017:27017"
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+  mongoinit:
+    image: "mongo:8.2.1"
+    restart: no
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    command: >
+      mongosh --host mongodb:27017 --eval
+      '
+      rs.initiate( {
+       _id : "rs0",
+       members: [
+          { _id: 0, host: "localhost:27017" }
+       ]
+      })
+      '

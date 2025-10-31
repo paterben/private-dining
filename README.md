@@ -19,7 +19,7 @@ Install Docker: https://docs.docker.com/get-started/get-docker/
 
 Install a Java JDK (21 or later), e.g. [Microsoft OpenJDK](https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-21).
 
-### Start up a containerized MongoDB instance
+### Start up a containerized MongoDB replica set
 
 From the repository root, run the following:
 
@@ -27,15 +27,15 @@ From the repository root, run the following:
 docker compose up -d
 ```
 
-This starts up a containerized MongoDB instance mapping to port 27017.
+This starts up a containerized MongoDB single-node replica set bound to port 27017.
 
 If you want to connect to the instance using `mongosh`, run the following:
 
 ```shell
-mongosh --port 27017 -u root -p password --authenticationDatabase admin private-dining
+mongosh --port 27017 privateDining
 ```
 
-The application uses the `private-dining` database by default, and integration tests use the `test` database.
+The application uses the `privateDining` database by default, and integration tests use the `test` database.
 
 ### Run tests
 
