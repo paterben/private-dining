@@ -3,6 +3,14 @@ This repo contains an implementation of a reservation system for private rooms i
 
 Design doc: [Private Dining Reservation System High-Level Design](https://docs.google.com/document/d/14CPIl_LvRHMtsfpiJaTUdS6z_dZ5HP5P666G7bugZ58/edit?usp=sharing).
 
+## Features
+
+TODO
+
+## Limitations
+
+TODO
+
 ## Cloning the repo
 
 To clone, run:
@@ -15,7 +23,7 @@ git clone https://github.com/paterben/private-dining.git
 
 ### Prerequisites
 
-Install Docker: https://docs.docker.com/get-started/get-docker/
+Install Docker: https://docs.docker.com/get-started/get-docker/.
 
 Install a Java JDK (21 or later), e.g. [Microsoft OpenJDK](https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-21).
 
@@ -53,6 +61,12 @@ In Windows:
 .\gradlew.bat bootRun
 ```
 
-### View the Swagger UI
+### Use the Swagger UI
 
 Once the application starts, the Swagger UI should be available at http://localhost:8080/swagger-ui.html.
+
+In addition to the normal API, you will see an admin API that you can use to populate the application with sample data or to delete all data.
+
+### AI statement
+
+I did not use any AI tooling to help with development.
