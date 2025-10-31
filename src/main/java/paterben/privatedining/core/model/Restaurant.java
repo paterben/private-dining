@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 // Restaurant metadata.
 @Document(collection = "restaurants")
 public class Restaurant {
-
     // Restaurant ID. Globally unique.
     @Id
     private String id;

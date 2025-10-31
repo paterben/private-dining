@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Diner metadata.")
 public class ApiDiner {
-
     @Id
     @Schema(description = "Diner ID. Set automatically.")
     private String id;

@@ -9,8 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 // List of tables for a restaurant.
 @Document(collection = "restaurantTables")
 public class RestaurantTables {
-    @Id
     // Restaurant ID. Globally unique.
+    @Id
     private String id;
     // The list of tables.
     private List<Table> tables;

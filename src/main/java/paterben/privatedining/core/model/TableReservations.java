@@ -9,8 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 // List of reservations for a table.
 @Document(collection = "tableReservations")
 public class TableReservations {
-    @Id
     // Table ID. Globally unique.
+    @Id
     private String id;
     // The ID of the restaurant the table belongs to.
     private String restaurantId;
