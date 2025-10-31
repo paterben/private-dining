@@ -25,7 +25,7 @@ public class Reservation {
     private Instant reservationEnd;
     // True if the reservation has been cancelled, either by the restaurant or the
     // diner.
-    private boolean isCancelled;
+    private Boolean isCancelled;
     // Creation time of the reservation.
     @CreatedDate
     private Instant createdAt;
@@ -88,11 +88,11 @@ public class Reservation {
         this.reservationEnd = reservationEnd;
     }
 
-    public boolean isCancelled() {
+    public Boolean getIsCancelled() {
         return isCancelled;
     }
 
-    public void setCancelled(boolean isCancelled) {
+    public void setIsCancelled(Boolean isCancelled) {
         this.isCancelled = isCancelled;
     }
 
@@ -141,7 +141,7 @@ public class Reservation {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((reservationStart == null) ? 0 : reservationStart.hashCode());
         result = prime * result + ((reservationEnd == null) ? 0 : reservationEnd.hashCode());
-        result = prime * result + (isCancelled ? 1231 : 1237);
+        result = prime * result + ((isCancelled == null) ? 0 : isCancelled.hashCode());
         result = prime * result + ((createdAt == null) ? 0 : createdAt.hashCode());
         result = prime * result + ((cancelledAt == null) ? 0 : cancelledAt.hashCode());
         return result;
@@ -191,7 +191,10 @@ public class Reservation {
                 return false;
         } else if (!reservationEnd.equals(other.reservationEnd))
             return false;
-        if (isCancelled != other.isCancelled)
+        if (isCancelled == null) {
+            if (other.isCancelled != null)
+                return false;
+        } else if (!isCancelled.equals(other.isCancelled))
             return false;
         if (createdAt == null) {
             if (other.createdAt != null)

@@ -105,7 +105,7 @@ public class AdminController {
 
         reservationService.createReservationForRestaurantAndTable(restaurant1.getId(), table1_1.getId(),
                 reservation1_1_1);
-        reservation1_1_1.setCancelled(true);
+        reservation1_1_1.setIsCancelled(true);
         reservationService.updateReservationForRestaurantAndTable(restaurant1.getId(), table1_1.getId(),
                 reservation1_1_1.getId(), reservation1_1_1);
         reservationService.createReservationForRestaurantAndTable(restaurant1.getId(), table1_1.getId(),

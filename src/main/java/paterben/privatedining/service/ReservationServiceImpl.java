@@ -130,7 +130,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public Reservation updateReservationForRestaurantAndTable(String restaurantId, String tableId, String reservationId,
             Reservation reservation) {
-        if (!reservation.isCancelled()) {
+        if (!reservation.getIsCancelled()) {
             throw new ServiceException(
                     "Setting `isCancelled` to true is required when updating a reservation. Only cancellation is supported.",
                     HttpStatus.BAD_REQUEST);
@@ -156,7 +156,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ServiceException("Reservation with ID " + reservationId + " not found",
                     HttpStatus.NOT_FOUND);
         }
-        if (existingTableReservation.get().isCancelled()) {
+        if (existingTableReservation.get().getIsCancelled()) {
             throw new ServiceException("Reservation with ID " + reservationId + " is already cancelled",
                     HttpStatus.PRECONDITION_FAILED);
         }
@@ -183,11 +183,11 @@ public class ReservationServiceImpl implements ReservationService {
 
         // Finally, update the reservation in both tableReservations and
         // dinerReservations in the same transaction.
-        existingTableReservation.get().setCancelled(true);
+        existingTableReservation.get().setIsCancelled(true);
         existingTableReservation.get().setCancelledAt(cancelledAt);
         TableReservations newTableReservations = tableReservationsRepository.save(tableReservations.get());
 
-        existingDinerReservation.get().setCancelled(true);
+        existingDinerReservation.get().setIsCancelled(true);
         existingDinerReservation.get().setCancelledAt(cancelledAt);
         dinerReservationsRepository.save(dinerReservations.get());
 
@@ -225,7 +225,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ServiceException("`reservationEnd` is required when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
         }
-        if (reservation.isCancelled()) {
+        if (reservation.getIsCancelled()) {
             throw new ServiceException("`isCancelled` cannot be set to true when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
         }
