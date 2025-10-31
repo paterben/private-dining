@@ -9,13 +9,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import paterben.privatedining.api.conversion.RestaurantApiConverter;
+import paterben.privatedining.api.conversion.ApiConverter;
 import paterben.privatedining.api.model.ApiErrorInfo;
 import paterben.privatedining.api.model.ApiRestaurant;
 import paterben.privatedining.core.model.Restaurant;
 import paterben.privatedining.service.RestaurantService;
+import paterben.privatedining.service.RestaurantServiceException;
 
 import java.util.Currency;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +38,27 @@ public class RestaurantController {
     private RestaurantService restaurantService;
 
     @Autowired
-    private RestaurantApiConverter converter;
+    private ApiConverter converter;
 
-    @GetMapping(path = "/api/restaurants/{id}")
+    @GetMapping(path = "/api/restaurants")
+    @Operation(summary = "List restaurants", description = "Returns the list of restaurants.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List returned successfully"),
+    })
+    public ResponseEntity<List<ApiRestaurant>> listRestaurants() {
+        List<Restaurant> restaurants = restaurantService.listRestaurants();
+        List<ApiRestaurant> apiRestaurants = restaurants.stream().map(r -> converter.ToApi(r)).toList();
+        return ResponseEntity.ok(apiRestaurants);
+    }
+
+    @GetMapping(path = "/api/restaurants/{restaurantId}")
     @Operation(summary = "Get restaurant by ID", description = "Returns the specific restaurant info.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Restaurant found"),
             @ApiResponse(responseCode = "404", description = "Restaurant not found", content = @Content(schema = @Schema()))
     })
-    public ResponseEntity<ApiRestaurant> getRestaurantById(@PathVariable("id") String id) {
-        Optional<Restaurant> restaurant = restaurantService.getRestaurantById(id);
+    public ResponseEntity<ApiRestaurant> getRestaurantById(@PathVariable("restaurantId") String restaurantId) {
+        Optional<Restaurant> restaurant = restaurantService.getRestaurantById(restaurantId);
         if (!restaurant.isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -68,6 +81,15 @@ public class RestaurantController {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiErrorInfo> handleError(HttpServletRequest req, ApiException ex) {
+        // logger.error("Request: " + req.getRequestURL() + " raised " + ex);
+
+        ApiErrorInfo info = new ApiErrorInfo();
+        info.setErrorMessage(ex.getLocalizedMessage());
+        return new ResponseEntity<ApiErrorInfo>(info, ex.getHttpStatusCode());
+    }
+
+    @ExceptionHandler(RestaurantServiceException.class)
+    public ResponseEntity<ApiErrorInfo> handleError(HttpServletRequest req, RestaurantServiceException ex) {
         // logger.error("Request: " + req.getRequestURL() + " raised " + ex);
 
         ApiErrorInfo info = new ApiErrorInfo();

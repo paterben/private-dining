@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +21,8 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import paterben.privatedining.api.model.ApiRestaurant;
@@ -55,6 +56,21 @@ public class RestaurantIT {
     }
 
     @Test
+    @DisplayName("Can list restaurants when none exist")
+    void listRestaurantsEmptyTest() throws UnsupportedEncodingException, JsonProcessingException {
+        // Call list restaurants API.
+        MvcTestResult listResult = listRestaurants();
+
+        // Check that returned list is empty.
+        assertThat(listResult).hasStatusOk();
+        String responseBody = listResult.getResponse().getContentAsString();
+        List<ApiRestaurant> restaurants = objectMapper.readValue(responseBody,
+                new TypeReference<List<ApiRestaurant>>() {
+                });
+        assertThat(restaurants).isEmpty();
+    }
+
+    @Test
     @DisplayName("Restaurant creation works and creates restaurant in DB")
     void createRestaurantTest() throws UnsupportedEncodingException, JsonProcessingException {
         // Call create restaurant API.
@@ -62,23 +78,20 @@ public class RestaurantIT {
         MvcTestResult createResult = createRestaurant(apiRestaurant);
 
         // Check that returned restaurant matches request.
-        assertThat(createResult).hasStatusOk();
-        String responseBody = createResult.getResponse().getContentAsString();
-        ApiRestaurant newRestaurant = objectMapper.readValue(responseBody, ApiRestaurant.class);
+        ApiRestaurant newRestaurant = getRestaurantFromResponseBody(createResult);
         String restaurantId = newRestaurant.getId();
         assertThat(restaurantId).isNotBlank();
         Instant created = newRestaurant.getCreated();
         assertThat(created).isNotNull();
         apiRestaurant.setId(restaurantId);
+        apiRestaurant.setCreated(created);
         assertEquals(apiRestaurant, newRestaurant);
 
         // Check that restaurant was created in DB.
         Optional<Restaurant> foundRestaurant = restaurantRepository.findById(restaurantId);
         assertThat(foundRestaurant).isPresent();
         assertEquals(restaurantId, foundRestaurant.get().getId());
-        // Created time is truncated to milliseconds by MongoDB.
-        assertEquals(created.truncatedTo(ChronoUnit.MILLIS),
-                foundRestaurant.get().getCreated().truncatedTo(ChronoUnit.MILLIS));
+        assertEquals(created, foundRestaurant.get().getCreated());
         assertEquals(newRestaurant.getName(), foundRestaurant.get().getName());
 
         // Check that empty restaurantTables was created in DB.
@@ -96,21 +109,43 @@ public class RestaurantIT {
         MvcTestResult createResult = createRestaurant(apiRestaurant);
 
         // Sanity check response.
-        assertThat(createResult).hasStatusOk();
-        String createResponseBody = createResult.getResponse().getContentAsString();
-        ApiRestaurant newRestaurant = objectMapper.readValue(createResponseBody, ApiRestaurant.class);
+        ApiRestaurant newRestaurant = getRestaurantFromResponseBody(createResult);
         String restaurantId = newRestaurant.getId();
         assertThat(restaurantId).isNotBlank();
 
         // Call get restaurant API.
         MvcTestResult getResult = getRestaurant(restaurantId);
-        assertThat(getResult).hasStatusOk();
 
         // Check that returned restaurant matches created one.
-        assertThat(getResult).hasStatusOk();
-        String getResponseBody = getResult.getResponse().getContentAsString();
-        ApiRestaurant getRestaurant = objectMapper.readValue(getResponseBody, ApiRestaurant.class);
+         ApiRestaurant getRestaurant = getRestaurantFromResponseBody(getResult);
         assertEquals(newRestaurant, getRestaurant);
+    }
+
+    @Test
+    @DisplayName("Multiple restaurant creation followed by list")
+    void createAndListMultipleRestaurantsTest() throws UnsupportedEncodingException, JsonProcessingException {
+        // Call create restaurant API twice.
+        ApiRestaurant apiRestaurant1 = new ApiRestaurant("Restaurant1", "Address1", "EUR");
+        MvcTestResult createResult1 = createRestaurant(apiRestaurant1);
+        ApiRestaurant apiRestaurant2 = new ApiRestaurant("Restaurant2", "Address2", "USD");
+        MvcTestResult createResult2 = createRestaurant(apiRestaurant2);
+
+        // Sanity check responses.
+        ApiRestaurant newRestaurant1 = getRestaurantFromResponseBody(createResult1);
+        ApiRestaurant newRestaurant2 = getRestaurantFromResponseBody(createResult2);
+
+        // Call list restaurants API.
+        MvcTestResult listResult = listRestaurants();
+
+        // Check that returned list matches.
+        assertThat(listResult).hasStatusOk();
+        String responseBody = listResult.getResponse().getContentAsString();
+        List<ApiRestaurant> restaurants = objectMapper.readValue(responseBody,
+                new TypeReference<List<ApiRestaurant>>() {
+                });
+        assertThat(restaurants).satisfiesExactly(
+                r1 -> assertEquals(newRestaurant1, r1),
+                r2 -> assertEquals(newRestaurant2, r2));
     }
 
     @Test
@@ -200,6 +235,21 @@ public class RestaurantIT {
                 .uri("/api/restaurants/{id}", id)
                 .exchange();
         return result;
+    }
+
+    private MvcTestResult listRestaurants() {
+        MvcTestResult result = this.mockMvcTester.get()
+                .uri("/api/restaurants")
+                .exchange();
+        return result;
+    }
+
+    private ApiRestaurant getRestaurantFromResponseBody(MvcTestResult testResult)
+            throws UnsupportedEncodingException, JsonMappingException, JsonProcessingException {
+        assertThat(testResult).hasStatusOk();
+        String responseBody = testResult.getResponse().getContentAsString();
+        ApiRestaurant newRestaurant = objectMapper.readValue(responseBody, ApiRestaurant.class);
+        return newRestaurant;
     }
 
 }

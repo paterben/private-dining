@@ -2,9 +2,10 @@ package paterben.privatedining.core.model;
 
 import org.springframework.data.annotation.Id;
 
-public class Table {
+public class Reservation {
     @Id
     private String id;
+
     private String name;
 
     public String getId() {
@@ -23,17 +24,17 @@ public class Table {
         this.name = name;
     }
 
-    public Table() {
+    public Reservation() {
     }
 
-    public Table(String name) {
+    public Reservation(String name) {
         this.name = name;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Table[id=%s, name='%s']",
+                "Reservation[id=%s, name='%s']",
                 id, name);
     }
 
@@ -54,7 +55,7 @@ public class Table {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Table other = (Table) obj;
+        Reservation other = (Reservation) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

@@ -30,8 +30,8 @@ public class PrivateDiningApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		// Delete everything from the DB.
-		restaurantRepository.deleteAll();
-		restaurantTablesRepository.deleteAll();
+		// restaurantRepository.deleteAll();
+		// restaurantTablesRepository.deleteAll();
 
 		// // Save a couple of restaurants to the DB.
 		// repository.save(new Restaurant("Bob's Pizza", "1234 Bob Ave, WA, USA", "USD"));

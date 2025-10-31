@@ -1,10 +1,15 @@
-package paterben.privatedining.core.model;
+package paterben.privatedining.api.model;
 
 import org.springframework.data.annotation.Id;
 
-public class Table {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Table metadata.")
+public class ApiTable {
     @Id
+    @Schema(description = "Table ID. Set automatically.")
     private String id;
+    @Schema(description = "Table name. Required. Must be unique within a restaurant.")
     private String name;
 
     public String getId() {
@@ -23,17 +28,17 @@ public class Table {
         this.name = name;
     }
 
-    public Table() {
+    public ApiTable() {
     }
 
-    public Table(String name) {
+    public ApiTable(String name) {
         this.name = name;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Table[id=%s, name='%s']",
+                "ApiTable[id=%s, name='%s']",
                 id, name);
     }
 
@@ -54,7 +59,7 @@ public class Table {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Table other = (Table) obj;
+        ApiTable other = (ApiTable) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

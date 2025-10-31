@@ -81,6 +81,7 @@ public class Restaurant {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((address == null) ? 0 : address.hashCode());
         result = prime * result + ((currency == null) ? 0 : currency.hashCode());
+        result = prime * result + ((created == null) ? 0 : created.hashCode());
         return result;
     }
 
@@ -112,6 +113,11 @@ public class Restaurant {
             if (other.currency != null)
                 return false;
         } else if (!currency.equals(other.currency))
+            return false;
+        if (created == null) {
+            if (other.created != null)
+                return false;
+        } else if (!created.equals(other.created))
             return false;
         return true;
     }

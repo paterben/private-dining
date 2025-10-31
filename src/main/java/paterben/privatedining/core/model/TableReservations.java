@@ -1,11 +1,17 @@
 package paterben.privatedining.core.model;
 
-import org.springframework.data.annotation.Id;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Table {
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "tableReservations")
+public class TableReservations {
     @Id
+    // The ID of the table.
     private String id;
-    private String name;
+    private List<Reservation> reservations;
 
     public String getId() {
         return id;
@@ -15,26 +21,16 @@ public class Table {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public List<Reservation> getReservations() {
+        return reservations;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
-    public Table() {
-    }
-
-    public Table(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                "Table[id=%s, name='%s']",
-                id, name);
+    public TableReservations() {
+        this.reservations = new ArrayList<>();
     }
 
     @Override
@@ -42,7 +38,7 @@ public class Table {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((reservations == null) ? 0 : reservations.hashCode());
         return result;
     }
 
@@ -54,16 +50,16 @@ public class Table {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Table other = (Table) obj;
+        TableReservations other = (TableReservations) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
         } else if (!id.equals(other.id))
             return false;
-        if (name == null) {
-            if (other.name != null)
+        if (reservations == null) {
+            if (other.reservations != null)
                 return false;
-        } else if (!name.equals(other.name))
+        } else if (!reservations.equals(other.reservations))
             return false;
         return true;
     }
