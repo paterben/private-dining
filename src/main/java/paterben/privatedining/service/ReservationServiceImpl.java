@@ -225,7 +225,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ServiceException("`reservationEnd` is required when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
         }
-        if (reservation.getIsCancelled()) {
+        if (reservation.getIsCancelled() != null && reservation.getIsCancelled()) {
             throw new ServiceException("`isCancelled` cannot be set to true when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
         }
@@ -236,7 +236,7 @@ public class ReservationServiceImpl implements ReservationService {
                     HttpStatus.BAD_REQUEST);
         }
         if (reservation.getCancelledAt() != null) {
-            throw new ServiceException("`cancelledAt must not be set when creating a reservation.",
+            throw new ServiceException("`cancelledAt` must not be set when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
         }
     }

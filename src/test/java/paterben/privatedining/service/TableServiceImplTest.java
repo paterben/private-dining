@@ -49,7 +49,7 @@ public class TableServiceImplTest {
     }
 
     @Test
-    @DisplayName("When restaurantTables exists, listTablesForRestaurant returns the list")
+    @DisplayName("When restaurant exists, listTablesForRestaurant returns the list")
     void testListTablesForRestaurant() {
         // Arrange
         Table foundTable1 = new Table("2345", "table1", 1, 3, RoomType.HALL, 1.5);
@@ -68,7 +68,7 @@ public class TableServiceImplTest {
     }
 
     @Test
-    @DisplayName("When restaurantTables exists and has an empty list of tables, listTablesForRestaurant returns an empty list")
+    @DisplayName("When restaurant exists and has an empty list of tables, listTablesForRestaurant returns an empty list")
     void testListEmptyTablesForRestaurant() {
         // Arrange
         RestaurantTables foundRestaurantTables = new RestaurantTables("1234");
@@ -83,7 +83,7 @@ public class TableServiceImplTest {
     }
 
     @Test
-    @DisplayName("When restaurantTables diesn't exist, listRestaurants returns empty")
+    @DisplayName("When restaurant doesn't exist, listRestaurants returns empty")
     void testListTablesForRestaurantNotFound() {
         // Act
         Optional<List<Table>> result = tableService.listTablesForRestaurant("1234");
