@@ -1,5 +1,6 @@
 package paterben.privatedining.service;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -26,6 +27,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     private DinerReservationsRepository dinerReservationsRepository;
+
+    @Autowired
+    private Clock clock;
 
     @Override
     public Optional<List<Reservation>> listReservationsForRestaurantAndTable(String restaurantId, String tableId) {
@@ -98,7 +102,10 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ServiceException("Table with ID " + tableId + " not found",
                     HttpStatus.NOT_FOUND);
         }
-        // TODO check reservation compatibility
+
+        // Verify that the reservation doesn't conflict with existing reservations.
+        verifyReservationToCreateIsCompatibleWithExistingReservations(reservation,
+                tableReservations.get().getReservations());
 
         Optional<DinerReservations> dinerReservations = dinerReservationsRepository.findById(reservation.getDinerId());
         if (dinerReservations.isEmpty()) {
@@ -113,7 +120,7 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setRestaurantId(restaurantId);
         reservation.setTableId(tableId);
         // We also generate the creation time ourselves for the same reason.
-        reservation.setCreatedAt(Instant.now().truncatedTo(ChronoUnit.MILLIS));
+        reservation.setCreatedAt(Instant.now(clock).truncatedTo(ChronoUnit.MILLIS));
 
         // Finally, add the reservation to both tableReservations and dinerReservations
         // in the same transaction.
@@ -161,6 +168,14 @@ public class ReservationServiceImpl implements ReservationService {
                     HttpStatus.PRECONDITION_FAILED);
         }
 
+        // Verify that the reservation hasn't already started.
+        // TODO: Restaurants should probably be allowed to cancel started reservations.
+        Instant now = Instant.now(clock);
+        if (existingTableReservation.get().getReservationStart().isBefore(now)) {
+            throw new ServiceException("Cannot cancel a reservation that has already begun.",
+                    HttpStatus.BAD_REQUEST);
+        }
+
         String dinerId = existingTableReservation.get().getDinerId();
         Optional<DinerReservations> dinerReservations = dinerReservationsRepository.findById(dinerId);
         if (dinerReservations.isEmpty()) {
@@ -179,7 +194,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // Generate reservation cancellation time.
-        Instant cancelledAt = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+        Instant cancelledAt = now.truncatedTo(ChronoUnit.MILLIS);
 
         // Finally, update the reservation in both tableReservations and
         // dinerReservations in the same transaction.
@@ -225,6 +240,14 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ServiceException("`reservationEnd` is required when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
         }
+        if (reservation.getReservationStart().compareTo(reservation.getReservationEnd()) >= 0) {
+            throw new ServiceException("`reservationEnd` must be strictly later than `reservationStart`.",
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (ChronoUnit.HOURS.between(reservation.getReservationStart(), reservation.getReservationEnd()) > 10) {
+            throw new ServiceException("Hours between `reservationStart` and `reservationEnd` must be 10 or less.",
+                    HttpStatus.BAD_REQUEST);
+        }
         if (reservation.getIsCancelled() != null && reservation.getIsCancelled()) {
             throw new ServiceException("`isCancelled` cannot be set to true when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
@@ -238,6 +261,29 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation.getCancelledAt() != null) {
             throw new ServiceException("`cancelledAt` must not be set when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
+        }
+
+        if (reservation.getReservationStart().isBefore(Instant.now(clock))) {
+            throw new ServiceException("`reservationStart` must not be in the past when creating a reservation.",
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void verifyReservationToCreateIsCompatibleWithExistingReservations(Reservation reservation,
+            List<Reservation> existingReservations) {
+        for (Reservation r : existingReservations) {
+            if (r.getIsCancelled() != null && r.getIsCancelled()) {
+                continue;
+            }
+
+            if ((reservation.getReservationStart().isAfter(r.getReservationStart())
+                    && reservation.getReservationStart().isBefore(r.getReservationEnd()))
+                    || (reservation.getReservationEnd().isAfter(r.getReservationStart())
+                            && reservation.getReservationEnd().isBefore(r.getReservationEnd()))) {
+                throw new ServiceException(
+                        "Reservation to create conflicts with reservation with ID " + r.getId() + ".",
+                        HttpStatus.CONFLICT);
+            }
         }
     }
 

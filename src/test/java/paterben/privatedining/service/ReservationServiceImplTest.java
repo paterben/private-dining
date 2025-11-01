@@ -8,6 +8,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,9 @@ public class ReservationServiceImplTest {
 
     @Mock
     private DinerReservationsRepository dinerReservationsRepository;
+
+    @Mock
+    private Clock clock;
 
     @InjectMocks
     private ReservationServiceImpl reservationService;
@@ -273,6 +277,7 @@ public class ReservationServiceImplTest {
         when(dinerReservationsRepository.findById("3222")).thenReturn(Optional.of(foundDinerReservations));
         when(tableReservationsRepository.save(any())).thenAnswer(makeTableReservationsAnswer());
         when(dinerReservationsRepository.save(any())).thenAnswer(makeDinerReservationsAnswer());
+        when(clock.instant()).thenReturn(Instant.ofEpochSecond(33332));
 
         // Act
         Reservation reservation = new Reservation("3222", "reservation4", Instant.ofEpochSecond(33333),
@@ -281,10 +286,9 @@ public class ReservationServiceImplTest {
 
         // Assert
         assertThat(result.getId()).isNotBlank();
-        assertThat(result.getCreatedAt()).isNotNull();
         Reservation expectedReservation = new Reservation(result.getId(), "1111", "2222", "3222", "reservation4",
                 Instant.ofEpochSecond(33333),
-                Instant.ofEpochSecond(44444), result.getCreatedAt());
+                Instant.ofEpochSecond(44444), Instant.ofEpochSecond(33332));
         assertThat(result).isEqualTo(expectedReservation);
         TableReservations tableReservations = new TableReservations("2222", "1111",
                 Arrays.asList(foundTableReservation1, foundTableReservation2, expectedReservation));
@@ -295,8 +299,37 @@ public class ReservationServiceImplTest {
     }
 
     @Test
+    @DisplayName("When reservations are not compatible (schedule conflict), createReservationForRestaurantAndTable fails with CONFLICT")
+    void testCreateReservationForRestaurantAndTableScheduleConflict() {
+        // Arrange
+        Reservation foundTableReservation1 = new Reservation("4111", "1111", "2222", "3111", "reservation1",
+                Instant.ofEpochSecond(11111), Instant.ofEpochSecond(22222), Instant.ofEpochSecond(1234));
+        Reservation foundTableReservation2 = new Reservation("4222", "1111", "2222", "3222", "reservation2",
+                Instant.ofEpochSecond(22222), Instant.ofEpochSecond(33333), Instant.ofEpochSecond(2345));
+        TableReservations foundTableReservations = new TableReservations("2222", "1111",
+                new ArrayList<Reservation>(Arrays.asList(foundTableReservation1, foundTableReservation2)));
+        when(tableReservationsRepository.findById("2222")).thenReturn(Optional.of(foundTableReservations));
+        when(clock.instant()).thenReturn(Instant.ofEpochSecond(33331));
+
+        // Act
+        Reservation reservation = new Reservation("3222", "reservation4", Instant.ofEpochSecond(33332),
+                Instant.ofEpochSecond(44444));
+        try {
+            reservationService.createReservationForRestaurantAndTable("1111", "2222", reservation);
+            fail();
+        } catch (ServiceException e) {
+            // Assert
+            assertThat(e.getHttpStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+            assertThat(e.getMessage()).contains("Reservation to create conflicts with reservation with ID 4222");
+        }
+    }
+
+    @Test
     @DisplayName("When table doesn't exist, createReservationForRestaurantAndTable fails with NOT_FOUND")
     void testCreateReservationForRestaurantAndTableTableNotFound() {
+        // Arrange
+        when(clock.instant()).thenReturn(Instant.ofEpochSecond(33332));
+
         // Act
         Reservation reservation = new Reservation("3222", "reservation4", Instant.ofEpochSecond(33333),
                 Instant.ofEpochSecond(44444));
@@ -316,6 +349,7 @@ public class ReservationServiceImplTest {
         // Arrange
         TableReservations foundTableReservations = new TableReservations("2222", "1222");
         when(tableReservationsRepository.findById("2222")).thenReturn(Optional.of(foundTableReservations));
+        when(clock.instant()).thenReturn(Instant.ofEpochSecond(33332));
 
         // Act
         Reservation reservation = new Reservation("3222", "reservation4", Instant.ofEpochSecond(33333),
@@ -336,6 +370,7 @@ public class ReservationServiceImplTest {
         // Arrange
         TableReservations foundTableReservations = new TableReservations("2222", "1111");
         when(tableReservationsRepository.findById("2222")).thenReturn(Optional.of(foundTableReservations));
+        when(clock.instant()).thenReturn(Instant.ofEpochSecond(33332));
 
         // Act
         Reservation reservation = new Reservation("3222", "reservation4", Instant.ofEpochSecond(33333),
@@ -464,6 +499,74 @@ public class ReservationServiceImplTest {
     }
 
     @Test
+    @DisplayName("When reservation to create has zero duration, createReservationForRestaurantAndTable fails with BAD_REQUEST")
+    void testCreateReservationForRestaurantAndTableWithZeroDurationFailsWithBadRequest() {
+        // Act
+        Reservation reservation = new Reservation("3222", "reservation4", Instant.ofEpochSecond(33333),
+                Instant.ofEpochSecond(33333));
+        try {
+            reservationService.createReservationForRestaurantAndTable("1111", "2222", reservation);
+            fail();
+        } catch (ServiceException e) {
+            // Assert
+            assertThat(e.getHttpStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getMessage()).contains("`reservationEnd` must be strictly later than `reservationStart`");
+        }
+    }
+
+    @Test
+    @DisplayName("When reservation to create has negative duration, createReservationForRestaurantAndTable fails with BAD_REQUEST")
+    void testCreateReservationForRestaurantAndTableWithNegativeDurationFailsWithBadRequest() {
+        // Act
+        Reservation reservation = new Reservation("3222", "reservation4", Instant.ofEpochSecond(44444),
+                Instant.ofEpochSecond(33333));
+        try {
+            reservationService.createReservationForRestaurantAndTable("1111", "2222", reservation);
+            fail();
+        } catch (ServiceException e) {
+            // Assert
+            assertThat(e.getHttpStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getMessage()).contains("`reservationEnd` must be strictly later than `reservationStart`");
+        }
+    }
+
+    @Test
+    @DisplayName("When reservation to create starts in the past, createReservationForRestaurantAndTable fails with BAD_REQUEST")
+    void testCreateReservationForRestaurantAndTableWithReservationStartInThePastFailsWithBadRequest() {
+        // Arrange
+        when(clock.instant()).thenReturn(Instant.ofEpochSecond(33334));
+
+        // Act
+        Reservation reservation = new Reservation("3222", "reservation4", Instant.ofEpochSecond(33333),
+                Instant.ofEpochSecond(44444));
+        try {
+            reservationService.createReservationForRestaurantAndTable("1111", "2222", reservation);
+            fail();
+        } catch (ServiceException e) {
+            // Assert
+            assertThat(e.getHttpStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getMessage()).contains("`reservationStart` must not be in the past");
+        }
+    }
+
+    @Test
+    @DisplayName("When reservation to create is 11 hours long, createReservationForRestaurantAndTable fails with BAD_REQUEST")
+    void testCreateReservationForRestaurantAndTableWithReservationTooLongFailsWithBadRequest() {
+        // Act
+        Reservation reservation = new Reservation("3222", "reservation4", Instant.ofEpochSecond(33333),
+                Instant.ofEpochSecond(72933));
+        try {
+            reservationService.createReservationForRestaurantAndTable("1111", "2222", reservation);
+            fail();
+        } catch (ServiceException e) {
+            // Assert
+            assertThat(e.getHttpStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getMessage())
+                    .contains("Hours between `reservationStart` and `reservationEnd` must be 10 or less");
+        }
+    }
+
+    @Test
     @DisplayName("When reservation to create has isCancelled set to true, createReservationForRestaurantAndTable fails with BAD_REQUEST")
     void testCreateReservationForRestaurantAndTableWithIsCancelledTrueFailsWithBadRequest() {
         // Act
@@ -534,6 +637,7 @@ public class ReservationServiceImplTest {
         when(dinerReservationsRepository.findById("3222")).thenReturn(Optional.of(foundDinerReservations));
         when(tableReservationsRepository.save(any())).thenAnswer(makeTableReservationsAnswer());
         when(dinerReservationsRepository.save(any())).thenAnswer(makeDinerReservationsAnswer());
+        when(clock.instant()).thenReturn(Instant.ofEpochSecond(22221));
 
         // Act
         Reservation reservation = new Reservation("ignored", "ignored", "ignored", "ignored", "ignored",
@@ -543,12 +647,11 @@ public class ReservationServiceImplTest {
                 reservation);
 
         // Assert
-        assertThat(result.getCancelledAt()).isNotNull();
         Reservation expectedReservation = new Reservation("4222", "1111", "2222", "3222", "reservation2",
                 Instant.ofEpochSecond(22222),
                 Instant.ofEpochSecond(33333), Instant.ofEpochSecond(2345));
         expectedReservation.setIsCancelled(true);
-        expectedReservation.setCancelledAt(result.getCancelledAt());
+        expectedReservation.setCancelledAt(Instant.ofEpochSecond(22221));
         assertThat(result).isEqualTo(expectedReservation);
         TableReservations tableReservations = new TableReservations("2222", "1111",
                 Arrays.asList(foundTableReservation1, expectedReservation));
@@ -663,6 +766,33 @@ public class ReservationServiceImplTest {
             // Assert
             assertThat(e.getHttpStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
             assertThat(e.getMessage()).contains("Reservation with ID 4222 is already cancelled");
+        }
+    }
+
+    @Test
+    @DisplayName("When reservation has already started and cancellation update occurs, updateReservationForRestaurantAndTable fails with BAD_REQUEST")
+    void testCancelUpdateReservationForRestaurantAndTableReservationAlreadyStartedFailsWithBadRequest() {
+        // Arrange
+        Reservation foundTableReservation1 = new Reservation("4111", "1111", "2222", "3111", "reservation1",
+                Instant.ofEpochSecond(11111), Instant.ofEpochSecond(22222), Instant.ofEpochSecond(1234));
+        Reservation foundTableReservation2 = new Reservation("4222", "1111", "2222", "3222", "reservation2",
+                Instant.ofEpochSecond(22222), Instant.ofEpochSecond(33333), Instant.ofEpochSecond(2345));
+        TableReservations foundTableReservations = new TableReservations("2222", "1111",
+                new ArrayList<Reservation>(Arrays.asList(foundTableReservation1, foundTableReservation2)));
+        when(tableReservationsRepository.findById("2222")).thenReturn(Optional.of(foundTableReservations));
+        when(clock.instant()).thenReturn(Instant.ofEpochSecond(22223));
+
+        // Act
+        Reservation reservation = new Reservation("ignored", "ignored", "ignored", "ignored", "ignored", null, null,
+                null);
+        reservation.setIsCancelled(true);
+        try {
+            reservationService.updateReservationForRestaurantAndTable("1111", "2222", "4222", reservation);
+            fail();
+        } catch (ServiceException e) {
+            // Assert
+            assertThat(e.getHttpStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getMessage()).contains("Cannot cancel a reservation that has already begun");
         }
     }
 
