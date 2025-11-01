@@ -1,7 +1,6 @@
 package paterben.privatedining.api.conversion;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import paterben.privatedining.api.model.ApiDiner;
@@ -15,8 +14,11 @@ import paterben.privatedining.core.model.Table;
 
 @Component
 public class ApiConverter {
-    @Autowired
     private ModelMapper modelMapper;
+
+    public ApiConverter(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     public Diner toCore(ApiDiner apiDiner) {
         Diner diner = this.modelMapper.map(apiDiner, Diner.class);
