@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Restaurant metadata.")
 public class ApiRestaurant {
     @Id
-    @Schema(description = "Restaurant ID. Set automatically.")
+    @Schema(description = "Restaurant ID. Set automatically on creation.")
     private String id;
     @Schema(description = "Restaurant name. Required.")
     private String name;
@@ -21,7 +21,7 @@ public class ApiRestaurant {
     @Schema(description = "Restaurant currency (ISO 4217 currency code). Required.")
     private String currency;
     @CreatedDate
-    @Schema(description = "Restaurant creation time. Set automatically.")
+    @Schema(description = "Restaurant creation time. Set automatically on creation.")
     private Instant createdAt;
 
     public String getId() {

@@ -2,21 +2,36 @@ package paterben.privatedining.core.model;
 
 import org.springframework.data.annotation.Id;
 
-// Table / private room metadata.
-// No Document annotation since all tables for a restaurant live within the restaurant document.
+/**
+ * Table / private room metadata.
+ */
+// No Document annotation since all tables for a restaurant live within the
+// restaurant document.
 public class Table {
-    // Table ID. Globally unique.
+    /**
+     * Table ID. Globally unique. Set automatically on creation.
+     */
     @Id
     private String id;
-    // Table name. Unique within a restaurant.
+    /**
+     * Table name. Required. Unique within a restaurant.
+     */
     private String name;
-    // Table min capacity. 0 means no minimum.
+    /**
+     * Table min capacity. Optional. 0 means no minimum.
+     */
     private int minCapacity;
-    // Table max capacity. Required.
+    /**
+     * Table max capacity. Required.
+     */
     private int maxCapacity;
-    // Room type. Required.
+    /**
+     * Room type. Required.
+     */
     private RoomType roomType;
-    // Minimum spend in restaurant local currency. 0 means no minimum.
+    /**
+     * Minimum spend in restaurant local currency. Optional. 0 means no minimum.
+     */
     private double minSpend;
 
     public String getId() {

@@ -8,7 +8,7 @@ import paterben.privatedining.core.model.RoomType;
 @Schema(description = "Table metadata.")
 public class ApiTable {
     @Id
-    @Schema(description = "Table ID. Set automatically.")
+    @Schema(description = "Table ID. Set automatically on creation.")
     private String id;
     @Schema(description = "Table name. Required. Must be unique within a restaurant.")
     private String name;

@@ -1,6 +1,8 @@
 package paterben.privatedining.core.model;
 
-// Private room type.
+/**
+ * Private room type.
+ */
 public enum RoomType {
     ROOFTOP,
     HALL,

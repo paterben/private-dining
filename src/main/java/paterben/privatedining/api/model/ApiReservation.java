@@ -10,11 +10,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Reservation metadata.")
 public class ApiReservation {
     @Id
-    @Schema(description = "Reservation ID. Set automatically.")
+    @Schema(description = "Reservation ID. Set automatically on creation.")
     private String id;
-    @Schema(description = "ID of the restaurant the reservation is for. Set automatically.")
+    @Schema(description = "ID of the restaurant the reservation is for. Set automatically on creation.")
     private String restaurantId;
-    @Schema(description = "ID of the table the reservation is for. Set automatically.")
+    @Schema(description = "ID of the table the reservation is for. Set automatically on creation.")
     private String tableId;
     @Schema(description = "ID of the diner the reservation is for. Required.")
     private String dinerId;
@@ -24,12 +24,12 @@ public class ApiReservation {
     private Instant reservationStart;
     @Schema(description = "End time of the reservation. Required.")
     private Instant reservationEnd;
-    @Schema(description = "True if the reservation has been cancelled, either by the restaurant or the diner.")
+    @Schema(description = "True if the reservation has been cancelled, either by the restaurant or the diner. Set to true to cancel the reservation.")
     private Boolean isCancelled;
     @CreatedDate
-    @Schema(description = "Reservation creation time. Set automatically.")
+    @Schema(description = "Reservation creation time. Set automatically on creation.")
     private Instant createdAt;
-    @Schema(description = "Cancellation time of the reservation, or null if not cancelled. Set automatically.")
+    @Schema(description = "Cancellation time of the reservation, or null if not cancelled. Set automatically on cancellation.")
     private Instant cancelledAt;
 
     public String getId() {

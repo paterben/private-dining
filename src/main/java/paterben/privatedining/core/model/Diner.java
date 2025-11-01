@@ -7,18 +7,29 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Diner metadata.
+ */
 @Document(collection = "diners")
 public class Diner {
-    // Diner ID. Globally unique.
+    /**
+     * Diner ID. Globally unique. Set automatically on creation.
+     */
     @Id
     private String id;
-    // Diner name. Required but not globally unique.
+    /**
+     * Diner name. Required but not globally unique.
+     */
     private String name;
-    // Diner email. Globally unique, enforced by a unique index. Requires MongoDB
-    // auto-index creation to be enabled.
+    /**
+     * Diner email. Required. Globally unique, enforced by a unique index. Requires
+     * MongoDB auto-index creation to be enabled.
+     */
     @Indexed(unique = true)
     private String email;
-    // Diner creation time.
+    /**
+     * Diner creation time. Set automatically on creation.
+     */
     @CreatedDate
     private Instant createdAt;
 

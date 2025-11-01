@@ -18,7 +18,7 @@ import paterben.privatedining.repository.TableReservationsRepository;
 
 @Service
 public class TableServiceImpl implements TableService {
-    
+
     @Autowired
     private RestaurantTablesRepository restaurantTablesRepository;
 
@@ -78,9 +78,21 @@ public class TableServiceImpl implements TableService {
         return Optional.of(restaurantTables.get().getTables());
     }
 
-    private void ValidateTableForCreation(Table table) throws ServiceException {
+    private void ValidateTableForCreation(Table table) {
         if (StringUtils.hasLength(table.getId())) {
             throw new ServiceException("Table `id` must not be set when creating a table.",
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (!StringUtils.hasLength(table.getName())) {
+            throw new ServiceException("`name` is required when creating a table.",
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (table.getMaxCapacity() == 0) {
+            throw new ServiceException("`maxCapacity` is required when creating a table.",
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (table.getRoomType() == null) {
+            throw new ServiceException("`roomType` is required when creating a table.",
                     HttpStatus.BAD_REQUEST);
         }
     }

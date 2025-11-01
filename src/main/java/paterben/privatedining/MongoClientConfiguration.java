@@ -12,6 +12,9 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.ServerAddress;
 
+/**
+ * Configuration class for MongoDB.
+ */
 @Configuration
 public class MongoClientConfiguration extends AbstractMongoClientConfiguration {
 
@@ -27,6 +30,7 @@ public class MongoClientConfiguration extends AbstractMongoClientConfiguration {
     @Value("${spring.data.mongodb.auto-index-creation}")
     private boolean autoIndexCreation;
 
+    // This is necessary in order to enable MongoDB transaction support.
     @Bean
     MongoTransactionManager transactionManager(MongoDatabaseFactory mongoDatabaseFactory) {
         return new MongoTransactionManager(mongoDatabaseFactory);

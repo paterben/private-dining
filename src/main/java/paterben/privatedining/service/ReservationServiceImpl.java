@@ -196,7 +196,7 @@ public class ReservationServiceImpl implements ReservationService {
         return newReservation;
     }
 
-    private void ValidateReservationForCreation(Reservation reservation) throws ServiceException {
+    private void ValidateReservationForCreation(Reservation reservation) {
         if (StringUtils.hasLength(reservation.getId())) {
             throw new ServiceException("`id` must not be set when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
@@ -229,6 +229,8 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ServiceException("`isCancelled` cannot be set to true when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
         }
+        // Set isCancelled to false in case it is null.
+        reservation.setIsCancelled(false);
         if (reservation.getCreatedAt() != null) {
             throw new ServiceException("`createdAt` must not be set when creating a reservation.",
                     HttpStatus.BAD_REQUEST);

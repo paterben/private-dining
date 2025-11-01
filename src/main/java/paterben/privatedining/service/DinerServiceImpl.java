@@ -50,8 +50,8 @@ public class DinerServiceImpl implements DinerService {
     }
 
     @Override
-    public Optional<Diner> getDinerById(String id) {
-        Optional<Diner> diner = dinerRepository.findById(id);
+    public Optional<Diner> getDinerById(String dinerId) {
+        Optional<Diner> diner = dinerRepository.findById(dinerId);
         return diner;
     }
 
@@ -61,7 +61,7 @@ public class DinerServiceImpl implements DinerService {
         return diners;
     }
 
-    private void ValidateDinerForCreation(Diner diner) throws ServiceException {
+    private void ValidateDinerForCreation(Diner diner) {
         if (StringUtils.hasLength(diner.getId())) {
             throw new ServiceException("`id` must not be set when creating a diner.",
                     HttpStatus.BAD_REQUEST);

@@ -5,31 +5,55 @@ import java.time.Instant;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 
-// Reservation metadata.
-// No Document annotation since all reservations live within the tableReservations or dinerReservations documents.
+/**
+ * Reservation metadata.
+ */
+// No Document annotation since all reservations live within the
+// tableReservations or dinerReservations documents.
 public class Reservation {
-    // Reservation ID. Globally unique.
+    /**
+     * Reservation ID. Globally unique. Set automatically on creation.
+     */
     @Id
     private String id;
-    // ID of the restaurant the reservation is for.
+    /**
+     * ID of the restaurant the reservation is for. Set automatically on creation.
+     */
     private String restaurantId;
-    // ID of the table the reservation is for.
+    /**
+     * ID of the table the reservation is for. Set automatically on creation.
+     */
     private String tableId;
-    // ID of the diner that made the reservation.
+    /**
+     * ID of the diner that made the reservation. Required.
+     */
     private String dinerId;
-    // Name under which the reservation is made.
+    /**
+     * Name under which the reservation is made. Required.
+     */
     private String name;
-    // Start time of the reservation.
+    /**
+     * Start time of the reservation. Required.
+     */
     private Instant reservationStart;
-    // End time of the reservation.
+    /**
+     * End time of the reservation. Required.
+     */
     private Instant reservationEnd;
-    // True if the reservation has been cancelled, either by the restaurant or the
-    // diner.
+    /**
+     * True if the reservation has been cancelled, either by the restaurant or the
+     * diner. Set to true to cancel the reservation.
+     */
     private Boolean isCancelled;
-    // Creation time of the reservation.
+    /**
+     * Creation time of the reservation. Set automatically on creation.
+     */
     @CreatedDate
     private Instant createdAt;
-    // Cancellation time of the reservation, or null if not cancelled.
+    /**
+     * Cancellation time of the reservation, or null if not cancelled. Set
+     * automatically on cancellation.
+     */
     private Instant cancelledAt;
 
     public String getId() {

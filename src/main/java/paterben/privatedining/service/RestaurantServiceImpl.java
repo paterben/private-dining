@@ -50,8 +50,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Optional<Restaurant> getRestaurantById(String id) {
-        Optional<Restaurant> restaurant = restaurantRepository.findById(id);
+    public Optional<Restaurant> getRestaurantById(String restaurantId) {
+        Optional<Restaurant> restaurant = restaurantRepository.findById(restaurantId);
         return restaurant;
     }
 
@@ -61,7 +61,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurants;
     }
 
-    private void ValidateRestaurantForCreation(Restaurant restaurant) throws ServiceException {
+    private void ValidateRestaurantForCreation(Restaurant restaurant) {
         if (StringUtils.hasLength(restaurant.getId())) {
             throw new ServiceException("`id` must not be set when creating a restaurant.",
                     HttpStatus.BAD_REQUEST);

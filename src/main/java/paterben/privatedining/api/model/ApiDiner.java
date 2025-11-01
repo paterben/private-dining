@@ -10,14 +10,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Diner metadata.")
 public class ApiDiner {
     @Id
-    @Schema(description = "Diner ID. Set automatically.")
+    @Schema(description = "Diner ID. Set automatically on creation.")
     private String id;
     @Schema(description = "Diner preferred name. Required.")
     private String name;
     @Schema(description = "Diner email. Required. Must be globally unique.")
     private String email;
     @CreatedDate
-    @Schema(description = "Diner creation time. Set automatically.")
+    @Schema(description = "Diner creation time. Set automatically on creation.")
     private Instant createdAt;
 
     public String getId() {

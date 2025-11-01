@@ -6,13 +6,19 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-// List of tables for a restaurant.
+/**
+ * List of tables for a restaurant.
+ */
 @Document(collection = "restaurantTables")
 public class RestaurantTables {
-    // Restaurant ID. Globally unique.
+    /**
+     * Restaurant ID. Globally unique. Set automatically on creation.
+     */
     @Id
     private String id;
-    // The list of tables.
+    /**
+     * The list of tables. Set to empty on creation.
+     */
     private List<Table> tables;
 
     public String getId() {

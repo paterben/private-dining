@@ -7,23 +7,37 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-// Restaurant metadata.
+/**
+ * Restaurant metadata.
+ */
 @Document(collection = "restaurants")
 public class Restaurant {
-    // Restaurant ID. Globally unique.
+    /**
+     * Restaurant ID. Globally unique. Set automatically on creation.
+     */
     @Id
     private String id;
-    // Restaurant name. Required but not globally unique.
+    /**
+     * Restaurant name. Required but not globally unique.
+     */
     private String name;
-    // Restaurant address. Optional.
+    /**
+     * Restaurant address. Optional.
+     */
     private String address;
-    // Restaurant email. Globally unique, enforced by a unique index. Requires
-    // MongoDB auto-index creation to be enabled.
+    /**
+     * Restaurant email. Required. Globally unique, enforced by a unique index.
+     * Requires MongoDB auto-index creation to be enabled.
+     */
     @Indexed(unique = true)
     private String email;
-    // Restaurant currency (ISO 4217 currency code). Required.
+    /**
+     * Restaurant currency (ISO 4217 currency code). Required.
+     */
     private String currency;
-    // Restaurant creation time.
+    /**
+     * Restaurant creation time. Set automatically on creation.
+     */
     @CreatedDate
     private Instant createdAt;
 
