@@ -44,7 +44,7 @@ public class DinerController {
     })
     public ResponseEntity<List<ApiDiner>> listDiners() {
         List<Diner> diners = dinerService.listDiners();
-        List<ApiDiner> apiDiners = diners.stream().map(d -> converter.ToApi(d)).toList();
+        List<ApiDiner> apiDiners = diners.stream().map(d -> converter.toApi(d)).toList();
         return ResponseEntity.ok(apiDiners);
     }
 
@@ -59,7 +59,7 @@ public class DinerController {
         if (!diner.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(converter.ToApi(diner.get()));
+        return ResponseEntity.ok(converter.toApi(diner.get()));
     }
 
     @PostMapping(path = "/api/diners", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,9 +69,9 @@ public class DinerController {
             @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content(schema = @Schema()))
     })
     public ApiDiner createDiner(@RequestBody ApiDiner apiDiner) {
-        Diner diner = converter.ToCore(apiDiner);
+        Diner diner = converter.toCore(apiDiner);
         Diner newDiner = dinerService.createDiner(diner);
-        return converter.ToApi(newDiner);
+        return converter.toApi(newDiner);
     }
 
     @ExceptionHandler(ServiceException.class)

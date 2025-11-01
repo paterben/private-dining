@@ -51,7 +51,7 @@ public class ReservationController {
         if (!reservations.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        List<ApiReservation> apiReservations = reservations.get().stream().map(t -> converter.ToApi(t)).toList();
+        List<ApiReservation> apiReservations = reservations.get().stream().map(t -> converter.toApi(t)).toList();
         return ResponseEntity.ok(apiReservations);
     }
 
@@ -69,7 +69,7 @@ public class ReservationController {
         if (!reservation.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(converter.ToApi(reservation.get()));
+        return ResponseEntity.ok(converter.toApi(reservation.get()));
     }
 
     @PostMapping(path = "/api/restaurants/{restaurantId}/tables/{tableId}/reservations", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -83,10 +83,10 @@ public class ReservationController {
     public ApiReservation createReservationForRestaurantAndTable(@PathVariable("restaurantId") String restaurantId,
             @PathVariable("tableId") String tableId,
             @RequestBody ApiReservation apiReservation) {
-        Reservation reservation = converter.ToCore(apiReservation);
+        Reservation reservation = converter.toCore(apiReservation);
         Reservation newReservation = reservationService.createReservationForRestaurantAndTable(restaurantId, tableId,
                 reservation);
-        return converter.ToApi(newReservation);
+        return converter.toApi(newReservation);
     }
 
     @PatchMapping(path = "/api/restaurants/{restaurantId}/tables/{tableId}/reservations/{reservationId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -100,10 +100,10 @@ public class ReservationController {
     public ApiReservation updateReservationForRestaurantAndTable(@PathVariable("restaurantId") String restaurantId,
             @PathVariable("tableId") String tableId, @PathVariable("reservationId") String reservationId,
             @RequestBody ApiReservation apiReservation) {
-        Reservation reservation = converter.ToCore(apiReservation);
+        Reservation reservation = converter.toCore(apiReservation);
         Reservation newReservation = reservationService.updateReservationForRestaurantAndTable(restaurantId, tableId,
                 reservationId, reservation);
-        return converter.ToApi(newReservation);
+        return converter.toApi(newReservation);
     }
 
     @GetMapping(path = "/api/diners/{dinerId}/reservations")
@@ -119,7 +119,7 @@ public class ReservationController {
         if (!reservations.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        List<ApiReservation> apiReservations = reservations.get().stream().map(t -> converter.ToApi(t)).toList();
+        List<ApiReservation> apiReservations = reservations.get().stream().map(t -> converter.toApi(t)).toList();
         return ResponseEntity.ok(apiReservations);
     }
 
@@ -135,7 +135,7 @@ public class ReservationController {
         if (!reservation.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(converter.ToApi(reservation.get()));
+        return ResponseEntity.ok(converter.toApi(reservation.get()));
     }
 
     @ExceptionHandler(ServiceException.class)

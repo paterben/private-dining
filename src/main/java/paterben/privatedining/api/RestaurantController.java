@@ -44,7 +44,7 @@ public class RestaurantController {
     })
     public ResponseEntity<List<ApiRestaurant>> listRestaurants() {
         List<Restaurant> restaurants = restaurantService.listRestaurants();
-        List<ApiRestaurant> apiRestaurants = restaurants.stream().map(r -> converter.ToApi(r)).toList();
+        List<ApiRestaurant> apiRestaurants = restaurants.stream().map(r -> converter.toApi(r)).toList();
         return ResponseEntity.ok(apiRestaurants);
     }
 
@@ -59,7 +59,7 @@ public class RestaurantController {
         if (!restaurant.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(converter.ToApi(restaurant.get()));
+        return ResponseEntity.ok(converter.toApi(restaurant.get()));
     }
 
     @PostMapping(path = "/api/restaurants", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,9 +69,9 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content(schema = @Schema()))
     })
     public ApiRestaurant createRestaurant(@RequestBody ApiRestaurant apiRestaurant) {
-        Restaurant restaurant = converter.ToCore(apiRestaurant);
+        Restaurant restaurant = converter.toCore(apiRestaurant);
         Restaurant newRestaurant = restaurantService.createRestaurant(restaurant);
-        return converter.ToApi(newRestaurant);
+        return converter.toApi(newRestaurant);
     }
 
     @ExceptionHandler(ServiceException.class)

@@ -48,7 +48,7 @@ public class TableController {
         if (!tables.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        List<ApiTable> apiTables = tables.get().stream().map(t -> converter.ToApi(t)).toList();
+        List<ApiTable> apiTables = tables.get().stream().map(t -> converter.toApi(t)).toList();
         return ResponseEntity.ok(apiTables);
     }
 
@@ -64,7 +64,7 @@ public class TableController {
         if (!table.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(converter.ToApi(table.get()));
+        return ResponseEntity.ok(converter.toApi(table.get()));
     }
 
     @PostMapping(path = "/api/restaurants/{restaurantId}/tables", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -77,11 +77,11 @@ public class TableController {
     })
     public ApiTable createTableForRestaurant(@PathVariable("restaurantId") String restaurantId,
             @RequestBody ApiTable apiTable) {
-        Table table = converter.ToCore(apiTable);
+        Table table = converter.toCore(apiTable);
         Table newTable = tableService.addTableToRestaurant(restaurantId, table);
-        return converter.ToApi(newTable);
+        return converter.toApi(newTable);
     }
-    
+
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ApiErrorInfo> handleError(HttpServletRequest req, ServiceException ex) {
         // logger.error("Request: " + req.getRequestURL() + " raised " + ex);
