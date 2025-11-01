@@ -62,8 +62,8 @@ public class DinerServiceImplTest {
 
         // Assert
         assertThat(result).satisfiesExactly(
-                r -> assertEquals(foundDiner1, r),
-                r -> assertEquals(foundDiner2, r));
+                d -> assertEquals(foundDiner1, d),
+                d -> assertEquals(foundDiner2, d));
     }
 
     @Test
@@ -115,9 +115,9 @@ public class DinerServiceImplTest {
 
         // Assert
         Diner expectedDiner = new Diner("1234", "diner1", "email1", Instant.ofEpochSecond(1234));
-        DinerReservations dinerReservations = new DinerReservations("1234");
         assertThat(result).isEqualTo(expectedDiner);
         verify(dinerRepository).save(ArgumentMatchers.eq(diner));
+        DinerReservations dinerReservations = new DinerReservations("1234");
         verify(dinerReservationsRepository).save(ArgumentMatchers.eq(dinerReservations));
     }
 

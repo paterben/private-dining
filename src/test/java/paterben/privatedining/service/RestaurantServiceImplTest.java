@@ -119,9 +119,9 @@ public class RestaurantServiceImplTest {
         // Assert
         Restaurant expectedRestaurant = new Restaurant("1234", "restaurant1", "address1", "email1", "EUR",
                 Instant.ofEpochSecond(1234));
-        RestaurantTables restaurantTables = new RestaurantTables("1234");
         assertThat(result).isEqualTo(expectedRestaurant);
         verify(restaurantRepository).save(ArgumentMatchers.eq(restaurant));
+        RestaurantTables restaurantTables = new RestaurantTables("1234");
         verify(restaurantTablesRepository).save(ArgumentMatchers.eq(restaurantTables));
     }
 
