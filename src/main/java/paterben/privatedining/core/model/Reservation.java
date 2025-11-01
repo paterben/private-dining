@@ -148,6 +148,15 @@ public class Reservation {
         this.isCancelled = false;
     }
 
+    public Reservation(String id, String restaurantId, String tableId, String dinerId, String name,
+            Instant reservationStart, Instant reservationEnd, Instant createdAt) {
+        this(dinerId, name, reservationStart, reservationEnd);
+        this.id = id;
+        this.restaurantId = restaurantId;
+        this.tableId = tableId;
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return String.format(

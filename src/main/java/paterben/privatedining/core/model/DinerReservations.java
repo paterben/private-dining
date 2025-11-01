@@ -41,6 +41,21 @@ public class DinerReservations {
         this.reservations = new ArrayList<>();
     }
 
+    public DinerReservations(String id) {
+        this.id = id;
+        this.reservations = new ArrayList<>();
+    }
+
+    public DinerReservations(String id, List<Reservation> reservations) {
+        this.id = id;
+        this.reservations = reservations;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DinerReservations[id='%s', reservations='%s']", id, reservations);
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

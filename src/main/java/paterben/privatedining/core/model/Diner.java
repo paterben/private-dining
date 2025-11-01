@@ -73,6 +73,12 @@ public class Diner {
         this.email = email;
     }
 
+    public Diner(String id, String name, String email, Instant createdAt) {
+        this(name, email);
+        this.id = id;
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return String.format(

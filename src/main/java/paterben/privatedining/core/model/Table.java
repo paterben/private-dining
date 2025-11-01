@@ -93,6 +93,11 @@ public class Table {
         this.minSpend = minSpend;
     }
 
+    public Table(String id, String name, int minCapacity, int maxCapacity, RoomType roomType, double minSpend) {
+        this(name, minCapacity, maxCapacity, roomType, minSpend);
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return String.format(

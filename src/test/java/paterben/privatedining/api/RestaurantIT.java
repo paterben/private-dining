@@ -57,7 +57,7 @@ public class RestaurantIT {
 
     @Test
     @DisplayName("Can list restaurants when none exist")
-    void listRestaurantsEmptyTest() throws UnsupportedEncodingException, JsonProcessingException {
+    void testListRestaurantsEmpty() throws UnsupportedEncodingException, JsonProcessingException {
         // Call list restaurants API.
         MvcTestResult listResult = listRestaurants();
 
@@ -72,7 +72,7 @@ public class RestaurantIT {
 
     @Test
     @DisplayName("Restaurant creation works and creates restaurant in DB")
-    void createRestaurantTest() throws UnsupportedEncodingException, JsonProcessingException {
+    void testCreateRestaurant() throws UnsupportedEncodingException, JsonProcessingException {
         // Call create restaurant API.
         ApiRestaurant apiRestaurant = new ApiRestaurant("Restaurant1", "Address1", "email1", "EUR");
         MvcTestResult createResult = createRestaurant(apiRestaurant);
@@ -103,7 +103,7 @@ public class RestaurantIT {
 
     @Test
     @DisplayName("Restaurant creation followed by get for the same restaurant")
-    void createAndGetRestaurantTest() throws UnsupportedEncodingException, JsonProcessingException {
+    void testCreateAndGetRestaurant() throws UnsupportedEncodingException, JsonProcessingException {
         // Call create restaurant API.
         ApiRestaurant apiRestaurant = new ApiRestaurant("Restaurant1", "Address1", "email1", "EUR");
         MvcTestResult createResult = createRestaurant(apiRestaurant);
@@ -122,8 +122,8 @@ public class RestaurantIT {
     }
 
     @Test
-    @DisplayName("Multiple restaurant creation followed by list")
-    void createAndListMultipleRestaurantsTest() throws UnsupportedEncodingException, JsonProcessingException {
+    @DisplayName("Multiple restaurant creation followed by list restaurants")
+    void testCreateAndListMultipleRestaurants() throws UnsupportedEncodingException, JsonProcessingException {
         // Call create restaurant API twice.
         ApiRestaurant apiRestaurant1 = new ApiRestaurant("Restaurant1", "Address1", "email1", "EUR");
         MvcTestResult createResult1 = createRestaurant(apiRestaurant1);
@@ -144,13 +144,13 @@ public class RestaurantIT {
                 new TypeReference<List<ApiRestaurant>>() {
                 });
         assertThat(restaurants).satisfiesExactly(
-                r1 -> assertEquals(newRestaurant1, r1),
-                r2 -> assertEquals(newRestaurant2, r2));
+                r -> assertEquals(newRestaurant1, r),
+                r -> assertEquals(newRestaurant2, r));
     }
 
     @Test
     @DisplayName("Creating multiple restaurants with same email fails")
-    void createMultipleRestaurantsWithSameEmailFailsTest()
+    void testCreateMultipleRestaurantsWithSameEmailFails()
             throws UnsupportedEncodingException, JsonProcessingException {
         // Call create restaurant API twice.
         ApiRestaurant apiRestaurant1 = new ApiRestaurant("Restaurant1", "Address1", "email1", "EUR");
@@ -166,13 +166,12 @@ public class RestaurantIT {
         // Check that only first restaurant exists by calling listRestaurants API.
         MvcTestResult listResult = listRestaurants();
         List<ApiRestaurant> restaurants = getRestaurantListFromResponseBody(listResult);
-        assertThat(restaurants).satisfiesExactly(
-                r1 -> assertEquals(newRestaurant1, r1));
+        assertThat(restaurants).satisfiesExactly(r -> assertEquals(newRestaurant1, r));
     }
 
     @Test
     @DisplayName("Getting a restaurant that doesn't exist returns NOT_FOUND")
-    void getNonExistentRestaurantTest() {
+    void testGetNonExistentRestaurant() {
         // Call get restaurant API.
         MvcTestResult getResult = getRestaurant("1234");
         assertThat(getResult).hasStatus(HttpStatus.NOT_FOUND);
@@ -180,7 +179,7 @@ public class RestaurantIT {
 
     @Test
     @DisplayName("Restaurant creation with explicit ID fails")
-    void createRestaurantWithIDFailsTest() throws JsonProcessingException {
+    void testCreateRestaurantWithIDFails() throws JsonProcessingException {
         // Call create restaurant API with explicit ID.
         ApiRestaurant apiRestaurant = new ApiRestaurant("Restaurant1", "Address1", "email1", "EUR");
         apiRestaurant.setId("1234");
@@ -197,7 +196,7 @@ public class RestaurantIT {
 
     @Test
     @DisplayName("Restaurant creation without a name fails")
-    void createRestaurantWithoutNameFailsTest() throws JsonProcessingException {
+    void testCreateRestaurantWithoutNameFails() throws JsonProcessingException {
         // Call create restaurant API without name.
         ApiRestaurant apiRestaurant = new ApiRestaurant("", "Address1", "email1", "EUR");
         MvcTestResult createResult = createRestaurant(apiRestaurant);
@@ -210,10 +209,10 @@ public class RestaurantIT {
         List<Restaurant> foundRestaurants = restaurantRepository.findAll();
         assertThat(foundRestaurants).isEmpty();
     }
-    
+
     @Test
     @DisplayName("Restaurant creation without an email fails")
-    void createRestaurantWithoutEmailFailsTest() throws JsonProcessingException {
+    void testCreateRestaurantWithoutEmailFails() throws JsonProcessingException {
         // Call create restaurant API without email.
         ApiRestaurant apiRestaurant = new ApiRestaurant("Restaurant1", "Address1", "", "EUR");
         MvcTestResult createResult = createRestaurant(apiRestaurant);
@@ -229,7 +228,7 @@ public class RestaurantIT {
 
     @Test
     @DisplayName("Restaurant creation without a currency fails")
-    void createRestaurantWithoutCurrencyFailsTest() throws JsonProcessingException {
+    void testCreateRestaurantWithoutCurrencyFails() throws JsonProcessingException {
         // Call create restaurant API without name.
         ApiRestaurant apiRestaurant = new ApiRestaurant("Restaurant1", "Address1", "email1", "");
         MvcTestResult createResult = createRestaurant(apiRestaurant);
@@ -245,7 +244,7 @@ public class RestaurantIT {
 
     @Test
     @DisplayName("Restaurant creation with invalid currency fails")
-    void createRestaurantWithInvalidCurrencyFailsTest() throws JsonProcessingException {
+    void testCreateRestaurantWithInvalidCurrencyFails() throws JsonProcessingException {
         // Call create restaurant API without name.
         ApiRestaurant apiRestaurant = new ApiRestaurant("Restaurant1", "Address1", "email1", "ASDF");
         MvcTestResult createResult = createRestaurant(apiRestaurant);

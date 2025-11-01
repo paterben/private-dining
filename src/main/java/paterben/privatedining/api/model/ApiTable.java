@@ -80,6 +80,11 @@ public class ApiTable {
         this.minSpend = minSpend;
     }
 
+    public ApiTable(String id, String name, int minCapacity, int maxCapacity, RoomType roomType, double minSpend) {
+        this(name, minCapacity, maxCapacity, roomType, minSpend);
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return String.format(

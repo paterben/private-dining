@@ -99,6 +99,12 @@ public class Restaurant {
         this.currency = currency;
     }
 
+    public Restaurant(String id, String name, String address, String email, String currency, Instant createdAt) {
+        this(name, address, email, currency);
+        this.id = id;
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return String.format(
