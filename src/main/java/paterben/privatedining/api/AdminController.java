@@ -20,7 +20,9 @@ import paterben.privatedining.service.RestaurantService;
 import paterben.privatedining.service.ServiceException;
 import paterben.privatedining.service.TableService;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,9 @@ public class AdminController {
 
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private Clock clock;
 
     @PostMapping(path = "/deleteAllData")
     @Operation(summary = "Delete all data", description = "Deletes all data from the database.")
@@ -86,22 +91,24 @@ public class AdminController {
         dinerService.createDiner(diner2);
         dinerService.createDiner(diner3);
 
+        Instant now = Instant.now(clock);
+
         Reservation reservation1_1_1 = new Reservation(diner1.getId(),
                 "Alice and friends - cancelled",
-                Instant.parse("2025-10-31T11:30:00.000Z"),
-                Instant.parse("2025-10-31T13:30:00.000Z"));
+                now.plus(1, ChronoUnit.HOURS),
+                now.plus(3, ChronoUnit.HOURS));
         Reservation reservation1_1_2 = new Reservation(diner1.getId(),
                 "Alice and friends",
-                Instant.parse("2025-10-31T12:30:00.000Z"),
-                Instant.parse("2025-10-31T14:30:00.000Z"));
+                now.plus(2, ChronoUnit.HOURS),
+                now.plus(4, ChronoUnit.HOURS));
         Reservation reservation1_1_3 = new Reservation(diner2.getId(),
                 "Bobby",
-                Instant.parse("2025-10-31T14:30:00.000Z"),
-                Instant.parse("2025-10-31T15:30:00.000Z"));
+                now.plus(4, ChronoUnit.HOURS),
+                now.plus(5, ChronoUnit.HOURS));
         Reservation reservation2_1_1 = new Reservation(diner2.getId(),
                 "Bobby's friend",
-                Instant.parse("2025-10-31T14:30:00.000Z"),
-                Instant.parse("2025-10-31T15:30:00.000Z"));
+                now.plus(4, ChronoUnit.HOURS),
+                now.plus(5, ChronoUnit.HOURS));
 
         reservationService.createReservationForRestaurantAndTable(restaurant1.getId(), table1_1.getId(),
                 reservation1_1_1);

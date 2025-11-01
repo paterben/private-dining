@@ -59,8 +59,9 @@ public interface ReservationService {
      *                     Fields that are set automatically must not be set. The
      *                     reservation to create cannot be in the cancelled state.
      * @throws ServiceException if the {@code reservation} is invalid, conflicts
-     *                          with an existing reservation for the same table or
-     *                          the restaurant, table or diner does not exist.
+     *                          with an existing reservation for the same table, has
+     *                          already started or the restaurant, table or diner
+     *                          does not exist.
      * @return the created reservation.
      */
     public Reservation createReservationForRestaurantAndTable(String restaurantId, String tableId,
@@ -76,8 +77,9 @@ public interface ReservationService {
      * @param reservation   the reservation to update. To cancel the reservation,
      *                      set {@link Reservation#isCancelled} to true. Other
      *                      fields are ignored.
-     * @throws ServiceException if the {@code reservation} is invalid or the
-     *                          restaurant, table or reservation does not exist.
+     * @throws ServiceException if the {@code reservation} is invalid, has already
+     *                          started or the restaurant, table or reservation does
+     *                          not exist.
      * @return the updated reservation.
      */
     public Reservation updateReservationForRestaurantAndTable(String restaurantId, String tableId, String reservationId,
