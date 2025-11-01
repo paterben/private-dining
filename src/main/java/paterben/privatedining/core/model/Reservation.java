@@ -137,6 +137,7 @@ public class Reservation {
     }
 
     public Reservation() {
+        this.isCancelled = false;
     }
 
     public Reservation(String dinerId, String name, Instant reservationStart, Instant reservationEnd) {
@@ -144,6 +145,7 @@ public class Reservation {
         this.name = name;
         this.reservationStart = reservationStart;
         this.reservationEnd = reservationEnd;
+        this.isCancelled = false;
     }
 
     @Override

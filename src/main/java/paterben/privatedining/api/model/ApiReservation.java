@@ -113,6 +113,7 @@ public class ApiReservation {
     }
 
     public ApiReservation() {
+        this.isCancelled = false;
     }
 
     public ApiReservation(String dinerId, String name, Instant reservationStart, Instant reservationEnd) {
@@ -120,6 +121,7 @@ public class ApiReservation {
         this.name = name;
         this.reservationStart = reservationStart;
         this.reservationEnd = reservationEnd;
+        this.isCancelled = false;
     }
 
     @Override
