@@ -52,7 +52,7 @@ public class TableController {
         return ResponseEntity.ok(apiTables);
     }
 
-    @GetMapping(path = "/api/restaurants/{restaurantId}/table/{tableId}")
+    @GetMapping(path = "/api/restaurants/{restaurantId}/tables/{tableId}")
     @Operation(summary = "Get table by ID", description = "Returns the specific table info.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Table found"),

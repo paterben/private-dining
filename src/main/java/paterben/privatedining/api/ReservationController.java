@@ -55,7 +55,7 @@ public class ReservationController {
         return ResponseEntity.ok(apiReservations);
     }
 
-    @GetMapping(path = "/api/restaurants/{restaurantId}/table/{tableId}/reservations/{reservationId}")
+    @GetMapping(path = "/api/restaurants/{restaurantId}/tables/{tableId}/reservations/{reservationId}")
     @Operation(summary = "Get reservation for table by ID", description = "Returns the specific reservation info.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Reservation found"),

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import paterben.privatedining.api.model.ApiDiner;
 import paterben.privatedining.api.model.ApiRestaurant;
+import paterben.privatedining.api.model.ApiTable;
 
 @TestComponent
 public class IntegrationTestUtils {
@@ -108,6 +109,47 @@ public class IntegrationTestUtils {
         return getDinerListFromResponseBody(result);
     }
 
+    public MvcTestResult addTableToRestaurant(String restaurantId, ApiTable apiTable) throws JsonProcessingException {
+        MvcTestResult result = this.mockMvcTester.post()
+                .uri("/api/restaurants/{restaurantId}/tables", restaurantId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(apiTable))
+                .exchange();
+        return result;
+    }
+
+    public ApiTable addTableToRestaurantAndGetResult(String restaurantId, ApiTable apiTable)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = addTableToRestaurant(restaurantId, apiTable);
+        return getTableFromResponseBody(result);
+    }
+
+    public MvcTestResult getTableForRestaurant(String restaurantId, String tableId) {
+        MvcTestResult result = this.mockMvcTester.get()
+                .uri("/api/restaurants/{restaurantId}/tables/{tableId}", restaurantId, tableId)
+                .exchange();
+        return result;
+    }
+
+    public ApiTable getTableForRestaurantAndGetResult(String restaurantId, String tableId)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = getTableForRestaurant(restaurantId, tableId);
+        return getTableFromResponseBody(result);
+    }
+
+    public MvcTestResult listTablesForRestaurant(String restaurantId) {
+        MvcTestResult result = this.mockMvcTester.get()
+                .uri("/api/restaurants/{restaurantId}/tables", restaurantId)
+                .exchange();
+        return result;
+    }
+
+    public List<ApiTable> listTablesForRestaurantAndGetResult(String restaurantId)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = listTablesForRestaurant(restaurantId);
+        return getTableListFromResponseBody(result);
+    }
+
     public ApiRestaurant getRestaurantFromResponseBody(MvcTestResult testResult)
             throws JsonProcessingException, UnsupportedEncodingException {
         assertThat(testResult).hasStatusOk();
@@ -144,4 +186,21 @@ public class IntegrationTestUtils {
         return diners;
     }
 
+    public ApiTable getTableFromResponseBody(MvcTestResult testResult)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        assertThat(testResult).hasStatusOk();
+        String responseBody = testResult.getResponse().getContentAsString();
+        ApiTable newTable = objectMapper.readValue(responseBody, ApiTable.class);
+        return newTable;
+    }
+
+    public List<ApiTable> getTableListFromResponseBody(MvcTestResult testResult)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        assertThat(testResult).hasStatusOk();
+        String responseBody = testResult.getResponse().getContentAsString();
+        List<ApiTable> tables = objectMapper.readValue(responseBody,
+                new TypeReference<List<ApiTable>>() {
+                });
+        return tables;
+    }
 }
