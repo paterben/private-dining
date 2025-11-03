@@ -84,8 +84,6 @@ public class TableController {
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ApiErrorInfo> handleError(HttpServletRequest req, ServiceException ex) {
-        // logger.error("Request: " + req.getRequestURL() + " raised " + ex);
-
         ApiErrorInfo info = new ApiErrorInfo();
         info.setErrorMessage(ex.getLocalizedMessage());
         return new ResponseEntity<ApiErrorInfo>(info, ex.getHttpStatusCode());
