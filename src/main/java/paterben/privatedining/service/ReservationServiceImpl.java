@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import paterben.privatedining.core.ReservationConflict;
 import paterben.privatedining.core.model.DinerReservations;
 import paterben.privatedining.core.model.Reservation;
 import paterben.privatedining.core.model.TableReservations;
@@ -296,15 +297,11 @@ public class ReservationServiceImpl implements ReservationService {
                 continue;
             }
 
-            if ((reservation.getReservationStart().isAfter(r.getReservationStart())
-                    && reservation.getReservationStart().isBefore(r.getReservationEnd()))
-                    || (reservation.getReservationEnd().isAfter(r.getReservationStart())
-                            && reservation.getReservationEnd().isBefore(r.getReservationEnd()))) {
+            if (ReservationConflict.reservationsOverlap(r, reservation)) {
                 throw new ServiceException(
                         "Reservation to create conflicts with reservation with ID " + r.getId() + ".",
                         HttpStatus.CONFLICT);
             }
         }
     }
-
 }
