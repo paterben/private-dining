@@ -16,9 +16,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import paterben.privatedining.api.model.ApiDiner;
+import paterben.privatedining.api.model.ApiReservation;
 import paterben.privatedining.api.model.ApiRestaurant;
 import paterben.privatedining.api.model.ApiTable;
 
+/**
+ * Utility methods for integration tests.
+ */
 @TestComponent
 public class IntegrationTestUtils {
     @Autowired
@@ -90,8 +94,7 @@ public class IntegrationTestUtils {
         return result;
     }
 
-    public ApiDiner getDinerAndGetResult(String id)
-            throws JsonProcessingException, UnsupportedEncodingException {
+    public ApiDiner getDinerAndGetResult(String id) throws JsonProcessingException, UnsupportedEncodingException {
         MvcTestResult result = getDiner(id);
         return getDinerFromResponseBody(result);
     }
@@ -103,8 +106,7 @@ public class IntegrationTestUtils {
         return result;
     }
 
-    public List<ApiDiner> listDinersAndGetResult()
-            throws JsonProcessingException, UnsupportedEncodingException {
+    public List<ApiDiner> listDinersAndGetResult() throws JsonProcessingException, UnsupportedEncodingException {
         MvcTestResult result = listDiners();
         return getDinerListFromResponseBody(result);
     }
@@ -150,12 +152,102 @@ public class IntegrationTestUtils {
         return getTableListFromResponseBody(result);
     }
 
+    public MvcTestResult listReservationsForRestaurantAndTable(String restaurantId, String tableId) {
+        MvcTestResult result = this.mockMvcTester.get()
+                .uri("/api/restaurants/{restaurantId}/tables/{tableId}/reservations", restaurantId, tableId)
+                .exchange();
+        return result;
+    }
+
+    public List<ApiReservation> listReservationsForRestaurantAndTableAndGetResult(String restaurantId, String tableId)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = listReservationsForRestaurantAndTable(restaurantId, tableId);
+        return getApiReservationListFromResponseBody(result);
+    }
+
+    public MvcTestResult listReservationsForDiner(String dinerId) {
+        MvcTestResult result = this.mockMvcTester.get()
+                .uri("/api/diners/{dinerId}/reservations", dinerId)
+                .exchange();
+        return result;
+    }
+
+    public List<ApiReservation> listReservationsForDinerAndGetResult(String dinerId)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = listReservationsForDiner(dinerId);
+        return getApiReservationListFromResponseBody(result);
+    }
+
+    public MvcTestResult getReservationForDiner(String dinerId, String reservationId) {
+        MvcTestResult result = this.mockMvcTester.get()
+                .uri("/api/diners/{dinerId}/reservations/{reservationId}", dinerId, reservationId)
+                .exchange();
+        return result;
+    }
+
+    public ApiReservation getReservationForDinerAndGetResult(String dinerId, String reservationId)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = getReservationForDiner(dinerId, reservationId);
+        return getApiReservationFromResponseBody(result);
+    }
+
+    public MvcTestResult getReservationForRestaurantAndTable(String restaurantId, String tableId,
+            String reservationId) {
+        MvcTestResult result = this.mockMvcTester.get()
+                .uri("/api/restaurants/{restaurantId}/tables/{tableId}/reservations/{reservationId}", restaurantId,
+                        tableId, reservationId)
+                .exchange();
+        return result;
+    }
+
+    public ApiReservation getReservationForRestaurantAndTableAndGetResult(String restaurantId, String tableId,
+            String reservationId) throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = getReservationForRestaurantAndTable(restaurantId, tableId, reservationId);
+        return getApiReservationFromResponseBody(result);
+    }
+
+    public MvcTestResult createReservationForRestaurantAndTable(String restaurantId, String tableId,
+            ApiReservation apiReservation) throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = this.mockMvcTester.post()
+                .uri("/api/restaurants/{restaurantId}/tables/{tableId}/reservations", restaurantId, tableId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(apiReservation))
+                .exchange();
+        return result;
+    }
+
+    public ApiReservation createReservationForRestaurantAndTableAndGetResult(String restaurantId, String tableId,
+            ApiReservation apiReservation) throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = createReservationForRestaurantAndTable(restaurantId, tableId, apiReservation);
+        return getApiReservationFromResponseBody(result);
+    }
+
+    public MvcTestResult updateReservationForRestaurantAndTable(String restaurantId, String tableId,
+            String reservationId, ApiReservation apiReservation)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = this.mockMvcTester.post()
+                .uri("/api/restaurants/{restaurantId}/tables/{tableId}/reservations/{reservationId}", restaurantId,
+                        tableId, reservationId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(apiReservation))
+                .exchange();
+        return result;
+    }
+
+    public ApiReservation updateReservationForRestaurantAndTableAndGetResult(String restaurantId, String tableId,
+            String reservationId, ApiReservation apiReservation)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        MvcTestResult result = updateReservationForRestaurantAndTable(restaurantId, tableId, reservationId,
+                apiReservation);
+        return getApiReservationFromResponseBody(result);
+    }
+
     public ApiRestaurant getRestaurantFromResponseBody(MvcTestResult testResult)
             throws JsonProcessingException, UnsupportedEncodingException {
         assertThat(testResult).hasStatusOk();
         String responseBody = testResult.getResponse().getContentAsString();
-        ApiRestaurant newRestaurant = objectMapper.readValue(responseBody, ApiRestaurant.class);
-        return newRestaurant;
+        ApiRestaurant restaurant = objectMapper.readValue(responseBody, ApiRestaurant.class);
+        return restaurant;
     }
 
     public List<ApiRestaurant> getRestaurantListFromResponseBody(MvcTestResult testResult)
@@ -172,8 +264,8 @@ public class IntegrationTestUtils {
             throws JsonProcessingException, UnsupportedEncodingException {
         assertThat(testResult).hasStatusOk();
         String responseBody = testResult.getResponse().getContentAsString();
-        ApiDiner newDiner = objectMapper.readValue(responseBody, ApiDiner.class);
-        return newDiner;
+        ApiDiner diner = objectMapper.readValue(responseBody, ApiDiner.class);
+        return diner;
     }
 
     public List<ApiDiner> getDinerListFromResponseBody(MvcTestResult testResult)
@@ -190,8 +282,8 @@ public class IntegrationTestUtils {
             throws JsonProcessingException, UnsupportedEncodingException {
         assertThat(testResult).hasStatusOk();
         String responseBody = testResult.getResponse().getContentAsString();
-        ApiTable newTable = objectMapper.readValue(responseBody, ApiTable.class);
-        return newTable;
+        ApiTable table = objectMapper.readValue(responseBody, ApiTable.class);
+        return table;
     }
 
     public List<ApiTable> getTableListFromResponseBody(MvcTestResult testResult)
@@ -202,5 +294,37 @@ public class IntegrationTestUtils {
                 new TypeReference<List<ApiTable>>() {
                 });
         return tables;
+    }
+
+    public ApiReservation getApiReservationFromResponseBody(MvcTestResult testResult)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        assertThat(testResult).hasStatusOk();
+        String responseBody = testResult.getResponse().getContentAsString();
+        ApiReservation reservation = objectMapper.readValue(responseBody, ApiReservation.class);
+        return reservation;
+    }
+
+    public List<ApiReservation> getApiReservationListFromResponseBody(MvcTestResult testResult)
+            throws JsonProcessingException, UnsupportedEncodingException {
+        assertThat(testResult).hasStatusOk();
+        String responseBody = testResult.getResponse().getContentAsString();
+        List<ApiReservation> reservations = objectMapper.readValue(responseBody,
+                new TypeReference<List<ApiReservation>>() {
+                });
+        return reservations;
+    }
+
+    public MvcTestResult deleteAllData() {
+        MvcTestResult result = this.mockMvcTester.post()
+                .uri("/admin/deleteAllData")
+                .exchange();
+        return result;
+    }
+
+    public MvcTestResult setupSampleData() {
+        MvcTestResult result = this.mockMvcTester.post()
+                .uri("/admin/setupSampleData")
+                .exchange();
+        return result;
     }
 }

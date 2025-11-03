@@ -50,7 +50,7 @@ public class AdminController {
     @Autowired
     private Clock clock;
 
-    @PostMapping(path = "/deleteAllData")
+    @PostMapping(path = "/admin/deleteAllData")
     @Operation(summary = "Delete all data", description = "Deletes all data from the database.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Data deleted successfully"),
@@ -59,7 +59,7 @@ public class AdminController {
         adminService.deleteAllData();
     }
 
-    @PostMapping(path = "/setupSampleData")
+    @PostMapping(path = "/admin/setupSampleData")
     @Operation(summary = "Setup sample data", description = "Sets up sample restaurants, tables, reservations and diners.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Data setup successfully"),
