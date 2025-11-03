@@ -98,7 +98,7 @@ public class AdminIT {
         String dinerId = newDiner.getId();
 
         // Call create reservation API.
-        Instant now = Instant.now();
+        Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
         ApiReservation apiReservation = new ApiReservation(dinerId, "reservation4", 3,
                 now.plus(1, ChronoUnit.HOURS),
                 now.plus(2, ChronoUnit.HOURS));

@@ -225,7 +225,7 @@ public class IntegrationTestUtils {
     public MvcTestResult updateReservationForRestaurantAndTable(String restaurantId, String tableId,
             String reservationId, ApiReservation apiReservation)
             throws JsonProcessingException, UnsupportedEncodingException {
-        MvcTestResult result = this.mockMvcTester.post()
+        MvcTestResult result = this.mockMvcTester.patch()
                 .uri("/api/restaurants/{restaurantId}/tables/{tableId}/reservations/{reservationId}", restaurantId,
                         tableId, reservationId)
                 .contentType(MediaType.APPLICATION_JSON)

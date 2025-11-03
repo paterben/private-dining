@@ -65,6 +65,8 @@ public class DinerIT {
     void testGetNonExistentDiner() {
         // Call get diner API.
         MvcTestResult getResult = utils.getDiner("1234");
+
+        // Check that request fails.
         assertThat(getResult).hasStatus(HttpStatus.NOT_FOUND);
     }
 

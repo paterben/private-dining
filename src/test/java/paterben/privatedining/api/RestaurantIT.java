@@ -65,6 +65,8 @@ public class RestaurantIT {
     void testGetNonExistentRestaurant() {
         // Call get restaurant API.
         MvcTestResult getResult = utils.getRestaurant("1234");
+
+        // Check that request fails.
         assertThat(getResult).hasStatus(HttpStatus.NOT_FOUND);
     }
 
@@ -165,6 +167,5 @@ public class RestaurantIT {
         // Check that no restaurants exist by calling listRestaurants API.
         List<ApiRestaurant> restaurants = utils.listRestaurantsAndGetResult();
         assertThat(restaurants).isEmpty();
-
     }
 }

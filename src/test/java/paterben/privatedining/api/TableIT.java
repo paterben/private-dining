@@ -92,6 +92,8 @@ public class TableIT {
 
         // Call get table API.
         MvcTestResult getResult = utils.getTableForRestaurant(restaurantId, "1234");
+
+        // Check that request fails.
         assertThat(getResult).hasStatus(HttpStatus.NOT_FOUND);
     }
 
@@ -100,6 +102,8 @@ public class TableIT {
     void testGetTableNonExistentRestaurant() throws JsonProcessingException, UnsupportedEncodingException {
         // Call get table API.
         MvcTestResult getResult = utils.getTableForRestaurant("1234", "2345");
+
+        // Check that request fails.
         assertThat(getResult).hasStatus(HttpStatus.NOT_FOUND);
     }
 
