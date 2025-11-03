@@ -37,6 +37,8 @@ git clone https://github.com/paterben/private-dining.git
 
 ## Building and running
 
+Note: The following instructions were only tested on Windows.
+
 ### Prerequisites
 
 Install Docker: https://docs.docker.com/get-started/get-docker/ and make sure it is running.
