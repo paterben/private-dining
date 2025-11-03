@@ -20,6 +20,8 @@ public class ApiReservation {
     private String dinerId;
     @Schema(description = "Name under which the reservation is made. Required.")
     private String name;
+    @Schema(description = "Number of guests in the reservation. Required.")
+    private int numGuests;
     @Schema(description = "Start time of the reservation. Required.")
     private Instant reservationStart;
     @Schema(description = "End time of the reservation. Required.")
@@ -72,6 +74,14 @@ public class ApiReservation {
         this.name = name;
     }
 
+    public int getNumGuests() {
+        return numGuests;
+    }
+
+    public void setNumGuests(int numGuests) {
+        this.numGuests = numGuests;
+    }
+
     public Instant getReservationStart() {
         return reservationStart;
     }
@@ -116,17 +126,19 @@ public class ApiReservation {
         this.isCancelled = false;
     }
 
-    public ApiReservation(String dinerId, String name, Instant reservationStart, Instant reservationEnd) {
+    public ApiReservation(String dinerId, String name, int numGuests, Instant reservationStart,
+            Instant reservationEnd) {
         this.dinerId = dinerId;
         this.name = name;
+        this.numGuests = numGuests;
         this.reservationStart = reservationStart;
         this.reservationEnd = reservationEnd;
         this.isCancelled = false;
     }
 
-    public ApiReservation(String id, String restaurantId, String tableId, String dinerId, String name,
+    public ApiReservation(String id, String restaurantId, String tableId, String dinerId, String name, int numGuests,
             Instant reservationStart, Instant reservationEnd, Instant createdAt) {
-        this(dinerId, name, reservationStart, reservationEnd);
+        this(dinerId, name, numGuests, reservationStart, reservationEnd);
         this.id = id;
         this.restaurantId = restaurantId;
         this.tableId = tableId;
@@ -136,9 +148,9 @@ public class ApiReservation {
     @Override
     public String toString() {
         return String.format(
-                "ApiReservation[id='%s', restaurantId='%s', tableId='%s', dinerId='%s', name='%s', reservationStart='%s', reservationEnd='%s', isCancelled='%s', createdAt='%s', cancelledAt='%s']",
-                id, restaurantId, tableId, dinerId, name, reservationStart, reservationEnd, isCancelled, createdAt,
-                cancelledAt);
+                "ApiReservation[id='%s', restaurantId='%s', tableId='%s', dinerId='%s', name='%s', numGuests='%s', reservationStart='%s', reservationEnd='%s', isCancelled='%s', createdAt='%s', cancelledAt='%s']",
+                id, restaurantId, tableId, dinerId, name, numGuests, reservationStart, reservationEnd, isCancelled,
+                createdAt, cancelledAt);
     }
 
     @Override
@@ -150,6 +162,7 @@ public class ApiReservation {
         result = prime * result + ((tableId == null) ? 0 : tableId.hashCode());
         result = prime * result + ((dinerId == null) ? 0 : dinerId.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + numGuests;
         result = prime * result + ((reservationStart == null) ? 0 : reservationStart.hashCode());
         result = prime * result + ((reservationEnd == null) ? 0 : reservationEnd.hashCode());
         result = prime * result + ((isCancelled == null) ? 0 : isCancelled.hashCode());
@@ -191,6 +204,8 @@ public class ApiReservation {
             if (other.name != null)
                 return false;
         } else if (!name.equals(other.name))
+            return false;
+        if (numGuests != other.numGuests)
             return false;
         if (reservationStart == null) {
             if (other.reservationStart != null)

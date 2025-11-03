@@ -39,9 +39,8 @@ public class DinerServiceImpl implements DinerService {
         // MongoDB silently truncates the created time to milliseconds.
         // See https://github.com/spring-projects/spring-data-mongodb/issues/2883.
         newDiner.setCreatedAt(newDiner.getCreatedAt().truncatedTo(ChronoUnit.MILLIS));
-        // Create an empty document in the dinerReservations repository within the same
-        // transaction, so it does not have to be created when adding the first
-        // reservation.
+        // Create the document for the diner in the dinerReservations repository within
+        // the same transaction.
         DinerReservations dinerReservations = new DinerReservations();
         dinerReservations.setId(newDiner.getId());
         dinerReservationsRepository.save(dinerReservations);

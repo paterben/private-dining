@@ -48,12 +48,13 @@ public class TableServiceImpl implements TableService {
         RestaurantTables newRestaurantTables = restaurantTablesRepository.save(restaurantTables.get());
         Table newTable = newRestaurantTables.getTables().getLast();
 
-        // Create an empty document in the tableReservations repository within the same
-        // transaction, so it does not have to be created when adding the first
-        // reservation.
+        // Create the document for the table in the tableReservations repository within
+        // the same transaction.
         TableReservations tableReservations = new TableReservations();
         tableReservations.setId(tableId);
         tableReservations.setRestaurantId(restaurantId);
+        tableReservations.setMinCapacity(table.getMinCapacity());
+        tableReservations.setMaxCapacity(table.getMaxCapacity());
         tableReservationsRepository.save(tableReservations);
 
         return newTable;

@@ -33,6 +33,10 @@ public class Reservation {
      */
     private String name;
     /**
+     * Number of guests in the reservation. Required.
+     */
+    private int numGuests;
+    /**
      * Start time of the reservation. Required.
      */
     private Instant reservationStart;
@@ -96,6 +100,14 @@ public class Reservation {
         this.name = name;
     }
 
+    public int getNumGuests() {
+        return numGuests;
+    }
+
+    public void setNumGuests(int numGuests) {
+        this.numGuests = numGuests;
+    }
+
     public Instant getReservationStart() {
         return reservationStart;
     }
@@ -140,17 +152,18 @@ public class Reservation {
         this.isCancelled = false;
     }
 
-    public Reservation(String dinerId, String name, Instant reservationStart, Instant reservationEnd) {
+    public Reservation(String dinerId, String name, int numGuests, Instant reservationStart, Instant reservationEnd) {
         this.dinerId = dinerId;
         this.name = name;
+        this.numGuests = numGuests;
         this.reservationStart = reservationStart;
         this.reservationEnd = reservationEnd;
         this.isCancelled = false;
     }
 
-    public Reservation(String id, String restaurantId, String tableId, String dinerId, String name,
+    public Reservation(String id, String restaurantId, String tableId, String dinerId, String name, int numGuests,
             Instant reservationStart, Instant reservationEnd, Instant createdAt) {
-        this(dinerId, name, reservationStart, reservationEnd);
+        this(dinerId, name, numGuests, reservationStart, reservationEnd);
         this.id = id;
         this.restaurantId = restaurantId;
         this.tableId = tableId;
@@ -160,9 +173,9 @@ public class Reservation {
     @Override
     public String toString() {
         return String.format(
-                "Reservation[id='%s', restaurantId='%s', tableId='%s', dinerId='%s', name='%s', reservationStart='%s', reservationEnd='%s', isCancelled='%s', createdAt='%s', cancelledAt='%s']",
-                id, restaurantId, tableId, dinerId, name, reservationStart, reservationEnd, isCancelled, createdAt,
-                cancelledAt);
+                "Reservation[id='%s', restaurantId='%s', tableId='%s', dinerId='%s', name='%s', numGuests='%s', reservationStart='%s', reservationEnd='%s', isCancelled='%s', createdAt='%s', cancelledAt='%s']",
+                id, restaurantId, tableId, dinerId, name, numGuests, reservationStart, reservationEnd, isCancelled,
+                createdAt, cancelledAt);
     }
 
     @Override
@@ -174,6 +187,7 @@ public class Reservation {
         result = prime * result + ((tableId == null) ? 0 : tableId.hashCode());
         result = prime * result + ((dinerId == null) ? 0 : dinerId.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + numGuests;
         result = prime * result + ((reservationStart == null) ? 0 : reservationStart.hashCode());
         result = prime * result + ((reservationEnd == null) ? 0 : reservationEnd.hashCode());
         result = prime * result + ((isCancelled == null) ? 0 : isCancelled.hashCode());
@@ -215,6 +229,8 @@ public class Reservation {
             if (other.name != null)
                 return false;
         } else if (!name.equals(other.name))
+            return false;
+        if (numGuests != other.numGuests)
             return false;
         if (reservationStart == null) {
             if (other.reservationStart != null)

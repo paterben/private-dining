@@ -94,19 +94,19 @@ public class AdminController {
         Instant now = Instant.now(clock);
 
         Reservation reservation1_1_1 = new Reservation(diner1.getId(),
-                "Alice and friends - cancelled",
+                "Alice and friends - cancelled", 5,
                 now.plus(1, ChronoUnit.HOURS),
                 now.plus(3, ChronoUnit.HOURS));
         Reservation reservation1_1_2 = new Reservation(diner1.getId(),
-                "Alice and friends",
+                "Alice and friends", 4,
                 now.plus(2, ChronoUnit.HOURS),
                 now.plus(4, ChronoUnit.HOURS));
         Reservation reservation1_1_3 = new Reservation(diner2.getId(),
-                "Bobby",
+                "Bobby", 1,
                 now.plus(4, ChronoUnit.HOURS),
                 now.plus(5, ChronoUnit.HOURS));
         Reservation reservation2_1_1 = new Reservation(diner2.getId(),
-                "Bobby's friend",
+                "Bobby's friend", 6,
                 now.plus(4, ChronoUnit.HOURS),
                 now.plus(5, ChronoUnit.HOURS));
 

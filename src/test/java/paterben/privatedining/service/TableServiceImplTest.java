@@ -157,7 +157,7 @@ public class TableServiceImplTest {
         RestaurantTables restaurantTables = new RestaurantTables("1234",
                 Arrays.asList(foundTable1, foundTable2, expectedTable));
         verify(restaurantTablesRepository).save(ArgumentMatchers.eq(restaurantTables));
-        TableReservations tableReservations = new TableReservations(result.getId(), "1234");
+        TableReservations tableReservations = new TableReservations(result.getId(), "1234", 1, 3);
         verify(tableReservationsRepository).save(ArgumentMatchers.eq(tableReservations));
     }
 

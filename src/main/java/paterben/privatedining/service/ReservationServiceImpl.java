@@ -103,9 +103,10 @@ public class ReservationServiceImpl implements ReservationService {
                     HttpStatus.NOT_FOUND);
         }
 
-        // Verify that the reservation doesn't conflict with existing reservations.
-        verifyReservationToCreateIsCompatibleWithExistingReservations(reservation,
-                tableReservations.get().getReservations());
+        // Verify that the reservation doesn't conflict with existing reservations, that
+        // the table is big enough, etc.
+        verifyReservationToCreateIsCompatibleWithTableReservations(reservation,
+                tableReservations.get());
 
         Optional<DinerReservations> dinerReservations = dinerReservationsRepository.findById(reservation.getDinerId());
         if (dinerReservations.isEmpty()) {
@@ -232,6 +233,10 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ServiceException("`name` is required when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
         }
+        if (reservation.getNumGuests() == 0) {
+            throw new ServiceException("`numGuests` is required when creating a reservation.",
+                    HttpStatus.BAD_REQUEST);
+        }
         if (reservation.getReservationStart() == null) {
             throw new ServiceException("`reservationStart` is required when creating a reservation.",
                     HttpStatus.BAD_REQUEST);
@@ -269,9 +274,24 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private void verifyReservationToCreateIsCompatibleWithExistingReservations(Reservation reservation,
-            List<Reservation> existingReservations) {
-        for (Reservation r : existingReservations) {
+    private void verifyReservationToCreateIsCompatibleWithTableReservations(Reservation reservation,
+            TableReservations tableReservations) {
+        // Check compatibility with table metadata.
+        if (reservation.getNumGuests() > tableReservations.getMaxCapacity()) {
+            throw new ServiceException(
+                    "Number of guests in reservation is too high (maxCapacity " + tableReservations.getMaxCapacity()
+                            + ", numGuests " + reservation.getNumGuests() + ").",
+                    HttpStatus.CONFLICT);
+        }
+        if (reservation.getNumGuests() < tableReservations.getMinCapacity()) {
+            throw new ServiceException(
+                    "Number of guests in reservation is too low (minCapacity " + tableReservations.getMaxCapacity()
+                            + ", numGuests " + reservation.getNumGuests() + ").",
+                    HttpStatus.CONFLICT);
+        }
+
+        // Check compatibility with existing reservations.
+        for (Reservation r : tableReservations.getReservations()) {
             if (r.getIsCancelled() != null && r.getIsCancelled()) {
                 continue;
             }

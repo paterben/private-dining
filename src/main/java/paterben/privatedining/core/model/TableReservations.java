@@ -7,7 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * List of reservations for a table.
+ * List of reservations for a table, and some table metadata needed to check
+ * reservation compatibility.
  */
 @Document(collection = "tableReservations")
 public class TableReservations {
@@ -20,6 +21,14 @@ public class TableReservations {
      * The ID of the restaurant the table belongs to. Set automatically on creation.
      */
     private String restaurantId;
+    /**
+     * Table min capacity. Set automatically on creation.
+     */
+    private int minCapacity;
+    /**
+     * Table max capacity. Set automatically on creation.
+     */
+    private int maxCapacity;
     /**
      * The list of reservations. Set to empty on creation.
      */
@@ -45,6 +54,22 @@ public class TableReservations {
         return reservations;
     }
 
+    public int getMinCapacity() {
+        return minCapacity;
+    }
+
+    public void setMinCapacity(int minCapacity) {
+        this.minCapacity = minCapacity;
+    }
+
+    public int getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
+    }
+
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
     }
@@ -53,22 +78,25 @@ public class TableReservations {
         this.reservations = new ArrayList<>();
     }
 
-    public TableReservations(String id, String restaurantId) {
+    public TableReservations(String id, String restaurantId, int minCapacity, int maxCapacity) {
         this.id = id;
         this.restaurantId = restaurantId;
+        this.minCapacity = minCapacity;
+        this.maxCapacity = maxCapacity;
         this.reservations = new ArrayList<>();
     }
 
-    public TableReservations(String id, String restaurantId, List<Reservation> reservations) {
-        this.id = id;
-        this.restaurantId = restaurantId;
+    public TableReservations(String id, String restaurantId, int minCapacity, int maxCapacity,
+            List<Reservation> reservations) {
+        this(id, restaurantId, minCapacity, maxCapacity);
         this.reservations = reservations;
     }
 
     @Override
     public String toString() {
-        return String.format("TableReservations[id='%s', restaurantId='%s', reservations='%s']", id, restaurantId,
-                reservations);
+        return String.format(
+                "TableReservations[id='%s', restaurantId='%s', minCapacity='%s', maxCapacity='%s', reservations='%s']",
+                id, restaurantId, minCapacity, maxCapacity, reservations);
     }
 
     @Override
@@ -76,6 +104,9 @@ public class TableReservations {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((restaurantId == null) ? 0 : restaurantId.hashCode());
+        result = prime * result + minCapacity;
+        result = prime * result + maxCapacity;
         result = prime * result + ((reservations == null) ? 0 : reservations.hashCode());
         return result;
     }
@@ -93,6 +124,15 @@ public class TableReservations {
             if (other.id != null)
                 return false;
         } else if (!id.equals(other.id))
+            return false;
+        if (restaurantId == null) {
+            if (other.restaurantId != null)
+                return false;
+        } else if (!restaurantId.equals(other.restaurantId))
+            return false;
+        if (minCapacity != other.minCapacity)
+            return false;
+        if (maxCapacity != other.maxCapacity)
             return false;
         if (reservations == null) {
             if (other.reservations != null)

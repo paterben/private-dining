@@ -34,9 +34,9 @@ public class ApiConverterTest {
     @Test
     @DisplayName("ApiConverter converts ApiReservation to Reservation and vice versa")
     void testReservationConversion() {
-        ApiReservation apiReservation = new ApiReservation("1234", "2345", "3456", "4567", "reservation1",
+        ApiReservation apiReservation = new ApiReservation("1234", "2345", "3456", "4567", "reservation1", 3,
                 Instant.ofEpochSecond(11111), Instant.ofEpochSecond(22222), Instant.ofEpochSecond(1234));
-        Reservation reservation = new Reservation("1234", "2345", "3456", "4567", "reservation1",
+        Reservation reservation = new Reservation("1234", "2345", "3456", "4567", "reservation1", 3,
                 Instant.ofEpochSecond(11111), Instant.ofEpochSecond(22222), Instant.ofEpochSecond(1234));
 
         assertEquals(reservation, apiConverter.toCore(apiReservation));
@@ -58,8 +58,8 @@ public class ApiConverterTest {
     @Test
     @DisplayName("ApiConverter converts ApiTable to Table and vice versa")
     void testTableConversion() {
-        ApiTable apiTable = new ApiTable("1234","table1", 1, 3, RoomType.HALL, 1.5);
-        Table table = new Table("1234","table1", 1, 3, RoomType.HALL, 1.5);
+        ApiTable apiTable = new ApiTable("1234", "table1", 1, 3, RoomType.HALL, 1.5);
+        Table table = new Table("1234", "table1", 1, 3, RoomType.HALL, 1.5);
 
         assertEquals(table, apiConverter.toCore(apiTable));
         assertEquals(apiTable, apiConverter.toApi(table));
