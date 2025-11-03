@@ -5,11 +5,27 @@ Design doc: [Private Dining Reservation System High-Level Design](https://docs.g
 
 ## Features
 
-TODO
+*   APIs for creating, listing and retrieving restaurants, tables, and diners.
+*   APIs for creating, cancelling, listing and retrieving reservations by table or by diner.
+*   Table reservation schedule conflict detection.
+*   Table reservation incompatibility detection (e.g. number of guests incompatible with table min / max setting).
+*   Convenience admin API for setting up sample data and for deleting all data.
+*   Use of multi-document MongoDB transactions (via `@Transactional` annotation).
+*   Descriptive error messages for client errors.
+*   Swagger UI with fully annotated schema metadata.
+*   Comprehensive unit and integration tests.
 
 ## Limitations
 
-TODO
+*   No APIs for updating or deleting data (apart from reservation cancellation).
+*   Old reservations are not cleaned up.
+*   No authN / authZ.
+*   No separation of restaurant and diner APIs.
+*   Only basic limitations on reservation start / end times (e.g. can make a reservation for 1 millisecond).
+*   No support for restaurants to set table opening times (tables are considered to be available 24/7 if not reserved).
+*   No frontend apart from Swagger UI.
+*   No asynchronous event queue.
+*   No caching of requests.
 
 ## Cloning the repo
 
@@ -63,10 +79,14 @@ In Windows:
 
 ### Use the Swagger UI
 
-Once the application starts, the Swagger UI should be available at http://localhost:8080/swagger-ui.html.
+Once the application starts, you can connect to the Swagger UI at http://localhost:8080/swagger-ui.html.
 
 In addition to the normal API, you will see an admin API that you can use to populate the application with sample data or to delete all data.
 
-### AI statement
+### View OpenAPI documentation
+
+Once the application starts, you can view OpenAPI docs at http://localhost:8080/v3/api-docs.
+
+## AI statement
 
 I did not use any AI tooling to help with development.
