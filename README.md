@@ -55,7 +55,7 @@ docker compose up -d
 
 This starts up a containerized MongoDB single-node replica set bound to port 27017.
 
-If you want to connect to the instance using `mongosh`, run the following:
+If you want to connect to the instance using [`mongosh`](https://www.mongodb.com/docs/mongodb-shell/), run the following:
 
 ```shell
 mongosh --port 27017 privateDining
