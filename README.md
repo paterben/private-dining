@@ -39,7 +39,7 @@ git clone https://github.com/paterben/private-dining.git
 
 ### Prerequisites
 
-Install Docker: https://docs.docker.com/get-started/get-docker/.
+Install Docker: https://docs.docker.com/get-started/get-docker/ and make sure it is running.
 
 Install a Java JDK (21 or later), e.g. [Microsoft OpenJDK](https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-21).
 
